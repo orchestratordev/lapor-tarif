@@ -22,6 +22,24 @@ export default function AdminLogin() {
     setError('')
 
     try {
+      const { data, error } = await supabase.auth.signInWithPassword({
+        email: form.email,
+        password: form.password
+      })
+
+      if (error) {
+        setError('Email atau password salah!')
+      } else if (data.session) {
+        router.push('/admin/dashboard')
+      }
+    } catch {
+      setError('Gagal login, coba lagi!')
+    } finally {
+      setLoading(false)
+    }
+  }
+
+    try {
       const res = await fetch('/api/auth/login', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
