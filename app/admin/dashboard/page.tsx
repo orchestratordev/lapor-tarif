@@ -41,7 +41,13 @@ export default function Dashboard() {
   const checkAuth = async () => {
     const { data } = await supabase.auth.getSession()
     if (!data.session) {
-      router.push('/admin')
+      // Tunggu sebentar, mungkin session masih loading
+      setTimeout(async () => {
+        const { data: data2 } = await supabase.auth.getSession()
+        if (!data2.session) {
+          router.push('/admin')
+        }
+      }, 1000)
     }
   }
 
