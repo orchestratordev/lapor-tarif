@@ -2,6 +2,7 @@
 
 import { useState } from 'react'
 import { useRouter } from 'next/navigation'
+import { supabase } from '@/lib/supabase'
 
 export default function AdminLogin() {
   const [form, setForm] = useState({
@@ -39,39 +40,16 @@ export default function AdminLogin() {
     }
   }
 
-    try {
-      const res = await fetch('/api/auth/login', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(form)
-      })
-
-      const result = await res.json()
-
-      if (result.success) {
-        router.push('/admin/dashboard')
-      } else {
-        setError(result.message)
-      }
-    } catch {
-      setError('Gagal login, coba lagi!')
-    } finally {
-      setLoading(false)
-    }
-  }
-
   return (
     <div className="min-h-screen bg-gray-50 flex items-center justify-center p-4">
       <div className="bg-white rounded-2xl shadow-lg p-8 max-w-sm w-full">
 
-        {/* Header */}
         <div className="text-center mb-6">
           <p className="text-3xl mb-2">🔐</p>
           <h1 className="text-xl font-bold text-gray-800">Admin DOKB</h1>
           <p className="text-xs text-gray-400 mt-1">Lapor Tarif — Tim Pengawas ASK</p>
         </div>
 
-        {/* Form */}
         <div className="space-y-4">
           <div>
             <label className="text-sm font-semibold text-gray-700">Email</label>
