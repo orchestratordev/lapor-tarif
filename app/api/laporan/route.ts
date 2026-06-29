@@ -16,7 +16,7 @@ export async function POST(req: NextRequest) {
     // 1. Analisis AI
     const analisis = await analisisLaporan({
       platform: body.platform,
-      jenis_layanan: body.jenis_layanan,
+      jarak: body.jarak,
       tarif_diterima: body.tarif_diterima,
       tarif_seharusnya: body.tarif_seharusnya,
       selisih: body.tarif_seharusnya - body.tarif_diterima,
@@ -27,7 +27,15 @@ export async function POST(req: NextRequest) {
     const { data, error } = await supabase
       .from('laporan')
       .insert({
-        ...body,
+        platform: body.platform,
+        jenis_layanan: 'Mobil',
+        jarak: body.jarak,
+        tarif_diterima: body.tarif_diterima,
+        tarif_seharusnya: body.tarif_seharusnya,
+        lokasi: body.lokasi,
+        waktu_kejadian: body.waktu_kejadian,
+        no_hp_driver: body.no_hp_driver,
+        screenshots: body.screenshots,
         analisis_ai: analisis,
         status: 'baru'
       })
@@ -37,12 +45,12 @@ export async function POST(req: NextRequest) {
     if (error) throw error
 
     // 3. Kirim notifikasi WA ke tim
-    const pesan = `
-🚨 *LAPORAN TARIF BARU*
+    const pesan = `🚨 *LAPORAN TARIF BARU*
 
 📱 Platform: ${body.platform}
-🛵 Jenis: ${body.jenis_layanan}
-💰 Tarif diterima: Rp ${body.tarif_diterima.toLocaleString('id-ID')}
+🚗 Jenis: Mobil (R4)
+📏 Jarak: ${body.jarak} km
+💰 Tarif diterima (NET): Rp ${body.tarif_diterima.toLocaleString('id-ID')}
 ✅ Tarif seharusnya: Rp ${body.tarif_seharusnya.toLocaleString('id-ID')}
 ❌ Selisih: Rp ${(body.tarif_seharusnya - body.tarif_diterima).toLocaleString('id-ID')}
 📍 Lokasi: ${body.lokasi}
@@ -51,9 +59,7 @@ export async function POST(req: NextRequest) {
 🤖 *Analisis AI:*
 ${analisis}
 
-🔗 Lihat dashboard:
-https://lapor.dokb.or.id/admin
-    `
+🔗 Dashboard: https://lapor.dokb.or.id/admin`
 
     for (const nomor of TIM_PENGAWAS) {
       await kirimWA(nomor, pesan)
