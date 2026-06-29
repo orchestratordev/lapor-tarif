@@ -66,9 +66,9 @@ ${analisis}
 
 🔗 Dashboard: https://lapor-tarif.vercel.app/admin`
 
-    for (const nomor of TIM_PENGAWAS) {
-      await kirimWA(nomor, pesan)
-    }
+    //for (const nomor of TIM_PENGAWAS) {
+    //  await kirimWA(nomor, pesan)
+  //  }
 
     return NextResponse.json({
       success: true,
