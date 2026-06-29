@@ -3,10 +3,9 @@ import { supabase } from '@/lib/supabase'
 import { kirimWA } from '@/lib/fonnte'
 import { analisisLaporan } from '@/lib/ai'
 
-// Nomor HP Tim Pengawas ASK
 const TIM_PENGAWAS = [
   '6281351238108', // Pak Jani
-  '628xxxxxxxxx', // Tim Pengawas 1
+  '6281xxxxxxxxx', // Tim Pengawas 1
 ]
 
 export async function POST(req: NextRequest) {
@@ -23,7 +22,7 @@ export async function POST(req: NextRequest) {
       lokasi: body.lokasi
     })
 
-    // 2. Simpan ke Supabase
+    // 2. Simpan ke Supabase (tanpa selisih — auto generated)
     const { data, error } = await supabase
       .from('laporan')
       .insert({
@@ -34,8 +33,8 @@ export async function POST(req: NextRequest) {
         tarif_seharusnya: body.tarif_seharusnya,
         lokasi: body.lokasi,
         waktu_kejadian: body.waktu_kejadian,
-        no_hp_driver: body.no_hp_driver,
-        screenshots: body.screenshots,
+        no_hp_driver: body.no_hp_driver || null,
+        screenshots: body.screenshots || [],
         analisis_ai: analisis,
         status: 'baru'
       })
@@ -44,7 +43,8 @@ export async function POST(req: NextRequest) {
 
     if (error) throw error
 
-    // 3. Kirim notifikasi WA ke tim
+    // 3. Kirim notifikasi WA
+    const selisih = body.tarif_seharusnya - body.tarif_diterima
     const pesan = `🚨 *LAPORAN TARIF BARU*
 
 📱 Platform: ${body.platform}
@@ -52,14 +52,14 @@ export async function POST(req: NextRequest) {
 📏 Jarak: ${body.jarak} km
 💰 Tarif diterima (NET): Rp ${body.tarif_diterima.toLocaleString('id-ID')}
 ✅ Tarif seharusnya: Rp ${body.tarif_seharusnya.toLocaleString('id-ID')}
-❌ Selisih: Rp ${(body.tarif_seharusnya - body.tarif_diterima).toLocaleString('id-ID')}
+❌ Selisih: Rp ${selisih.toLocaleString('id-ID')}
 📍 Lokasi: ${body.lokasi}
 🕐 Waktu: ${body.waktu_kejadian}
 
 🤖 *Analisis AI:*
 ${analisis}
 
-🔗 Dashboard: https://lapor.dokb.or.id/admin`
+🔗 Dashboard: https://lapor-tarif.vercel.app/admin`
 
     for (const nomor of TIM_PENGAWAS) {
       await kirimWA(nomor, pesan)
