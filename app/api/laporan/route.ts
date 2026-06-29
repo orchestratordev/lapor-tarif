@@ -12,15 +12,20 @@ export async function POST(req: NextRequest) {
   try {
     const body = await req.json()
 
-    // 1. Analisis AI
-    const analisis = await analisisLaporan({
-      platform: body.platform,
-      jarak: body.jarak,
-      tarif_diterima: body.tarif_diterima,
-      tarif_seharusnya: body.tarif_seharusnya,
-      selisih: body.tarif_seharusnya - body.tarif_diterima,
-      lokasi: body.lokasi
-    })
+    // 1. Analisis AI (tidak blocking)
+let analisis = 'Analisis AI tidak tersedia'
+try {
+  analisis = await analisisLaporan({
+    platform: body.platform,
+    jarak: body.jarak,
+    tarif_diterima: body.tarif_diterima,
+    tarif_seharusnya: body.tarif_seharusnya,
+    selisih: body.tarif_seharusnya - body.tarif_diterima,
+    lokasi: body.lokasi
+  })
+} catch (aiError) {
+  console.error('AI Error:', aiError)
+}
 
     // 2. Simpan ke Supabase (tanpa selisih — auto generated)
     const { data, error } = await supabase
