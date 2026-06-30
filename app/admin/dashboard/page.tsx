@@ -3,6 +3,19 @@
 import { useState, useEffect } from 'react'
 import { useRouter } from 'next/navigation'
 import { supabase } from '@/lib/supabase'
+import {
+  SignOut,
+  Car,
+  MapPin,
+  Clock,
+  Phone,
+  CheckCircle,
+  Warning,
+  Robot,
+  X,
+  ArrowsClockwise,
+  ShieldCheck
+} from '@phosphor-icons/react'
 
 type Laporan = {
   id: string
@@ -20,10 +33,10 @@ type Laporan = {
   created_at: string
 }
 
-const STATUS_COLOR: Record<string, string> = {
-  baru: 'bg-red-100 text-red-600',
-  proses: 'bg-yellow-100 text-yellow-600',
-  selesai: 'bg-green-100 text-green-600'
+const STATUS_STYLE: Record<string, { bg: string; text: string; label: string }> = {
+  baru: { bg: 'linear-gradient(135deg, #fef2f2, #fee2e2)', text: '#dc2626', label: 'Baru' },
+  proses: { bg: 'linear-gradient(135deg, #fffbeb, #fef3c7)', text: '#d97706', label: 'Proses' },
+  selesai: { bg: 'linear-gradient(135deg, #f0fdf4, #dcfce7)', text: '#16a34a', label: 'Selesai' }
 }
 
 export default function Dashboard() {
@@ -41,12 +54,9 @@ export default function Dashboard() {
   const checkAuth = async () => {
     const { data } = await supabase.auth.getSession()
     if (!data.session) {
-      // Tunggu sebentar, mungkin session masih loading
       setTimeout(async () => {
         const { data: data2 } = await supabase.auth.getSession()
-        if (!data2.session) {
-          router.push('/admin')
-        }
+        if (!data2.session) router.push('/admin')
       }, 1000)
     }
   }
@@ -63,10 +73,7 @@ export default function Dashboard() {
   }
 
   const updateStatus = async (id: string, status: string) => {
-    await supabase
-      .from('laporan')
-      .update({ status })
-      .eq('id', id)
+    await supabase.from('laporan').update({ status }).eq('id', id)
     fetchLaporan()
     setSelected(null)
   }
@@ -76,9 +83,7 @@ export default function Dashboard() {
     router.push('/admin')
   }
 
-  const filtered = filter === 'semua'
-    ? laporan
-    : laporan.filter(l => l.status === filter)
+  const filtered = filter === 'semua' ? laporan : laporan.filter(l => l.status === filter)
 
   const stats = {
     total: laporan.length,
@@ -88,222 +93,247 @@ export default function Dashboard() {
   }
 
   return (
-    <div className="min-h-screen bg-gray-50">
+    <div className="min-h-screen" style={{ background: '#f8f8fa' }}>
 
       {/* Header */}
-      <div className="bg-red-600 text-white p-4">
-        <div className="flex justify-between items-center max-w-2xl mx-auto">
-          <div>
-            <h1 className="font-bold">🚨 Dashboard Lapor Tarif</h1>
-            <p className="text-xs text-red-100">Tim Pengawas ASK DOKB</p>
+      <div className="relative overflow-hidden"
+        style={{
+          background: 'linear-gradient(135deg, #b91c1c 0%, #dc2626 60%, #f97316 100%)',
+          paddingBottom: '28px'
+        }}
+      >
+        <div className="absolute -top-8 -right-8 w-32 h-32 rounded-full" style={{ background: 'rgba(255,255,255,0.08)' }} />
+        <div className="relative p-6 pt-8 flex justify-between items-start max-w-2xl mx-auto">
+          <div className="flex items-center gap-2">
+            <ShieldCheck size={26} color="white" weight="fill" />
+            <div>
+              <h1 className="text-lg font-extrabold text-white" style={{ fontFamily: 'var(--font-plus-jakarta)' }}>
+                Dashboard
+              </h1>
+              <p className="text-red-100 text-xs font-medium">Tim Pengawas ASK DOKB</p>
+            </div>
           </div>
           <button
             onClick={handleLogout}
-            className="text-xs bg-red-700 px-3 py-2 rounded-lg"
+            className="flex items-center gap-1.5 px-3 py-2 rounded-xl text-xs font-bold text-white"
+            style={{ background: 'rgba(255,255,255,0.15)', backdropFilter: 'blur(8px)' }}
           >
+            <SignOut size={14} weight="bold" />
             Keluar
           </button>
         </div>
       </div>
 
-      <div className="max-w-2xl mx-auto p-4 space-y-4">
+      <div className="max-w-2xl mx-auto p-4 -mt-4 relative z-10 space-y-4">
 
         {/* Stats */}
         <div className="grid grid-cols-4 gap-2">
           {[
-            { label: 'Total', value: stats.total, color: 'bg-gray-100 text-gray-700' },
-            { label: 'Baru', value: stats.baru, color: 'bg-red-100 text-red-600' },
-            { label: 'Proses', value: stats.proses, color: 'bg-yellow-100 text-yellow-600' },
-            { label: 'Selesai', value: stats.selesai, color: 'bg-green-100 text-green-600' },
+            { label: 'Total', value: stats.total, grad: 'linear-gradient(135deg,#475569,#64748b)' },
+            { label: 'Baru', value: stats.baru, grad: 'linear-gradient(135deg,#dc2626,#f97316)' },
+            { label: 'Proses', value: stats.proses, grad: 'linear-gradient(135deg,#d97706,#f59e0b)' },
+            { label: 'Selesai', value: stats.selesai, grad: 'linear-gradient(135deg,#16a34a,#22c55e)' },
           ].map(s => (
-            <div key={s.label} className={`${s.color} rounded-xl p-3 text-center`}>
-              <p className="text-xl font-bold">{s.value}</p>
-              <p className="text-xs">{s.label}</p>
+            <div key={s.label} className="rounded-2xl p-3 text-center text-white"
+              style={{ background: s.grad, boxShadow: '0 6px 16px rgba(0,0,0,0.12)' }}
+            >
+              <p className="text-xl font-extrabold">{s.value}</p>
+              <p className="text-[10px] font-semibold opacity-90 mt-0.5">{s.label}</p>
             </div>
           ))}
         </div>
 
-        {/* Filter */}
-        <div className="flex gap-2 overflow-x-auto pb-1">
-          {['semua', 'baru', 'proses', 'selesai'].map(f => (
-            <button
-              key={f}
-              onClick={() => setFilter(f)}
-              className={`px-4 py-2 rounded-xl text-sm font-medium whitespace-nowrap transition-all ${
-                filter === f
-                  ? 'bg-red-500 text-white'
-                  : 'bg-white text-gray-600 border border-gray-200'
-              }`}
-            >
-              {f.charAt(0).toUpperCase() + f.slice(1)}
-            </button>
-          ))}
+        {/* Filter + Refresh */}
+        <div className="flex gap-2">
+          <div className="flex gap-2 overflow-x-auto flex-1">
+            {['semua', 'baru', 'proses', 'selesai'].map(f => (
+              <button
+                key={f}
+                onClick={() => setFilter(f)}
+                className="px-4 py-2.5 rounded-xl text-xs font-bold whitespace-nowrap transition-all"
+                style={filter === f ? {
+                  background: 'linear-gradient(135deg, #dc2626, #f97316)',
+                  color: 'white',
+                  boxShadow: '0 4px 12px rgba(220,38,38,0.35)'
+                } : {
+                  background: 'white',
+                  color: '#6b7280',
+                  boxShadow: '0 2px 6px rgba(0,0,0,0.06)'
+                }}
+              >
+                {f.charAt(0).toUpperCase() + f.slice(1)}
+              </button>
+            ))}
+          </div>
+          <button
+            onClick={fetchLaporan}
+            className="w-10 h-10 rounded-xl flex items-center justify-center flex-shrink-0"
+            style={{ background: 'white', boxShadow: '0 2px 6px rgba(0,0,0,0.06)' }}
+          >
+            <ArrowsClockwise size={16} color="#dc2626" weight="bold" />
+          </button>
         </div>
 
-        {/* Refresh */}
-        <button
-          onClick={fetchLaporan}
-          className="w-full bg-white border border-gray-200 text-gray-600 py-2 rounded-xl text-sm font-medium"
-        >
-          🔄 Refresh Laporan
-        </button>
-
-        {/* List Laporan */}
+        {/* List */}
         {loading ? (
-          <div className="text-center py-8 text-gray-400">
-            ⏳ Memuat laporan...
-          </div>
+          <div className="text-center py-12 text-gray-400 text-sm font-medium">⏳ Memuat laporan...</div>
         ) : filtered.length === 0 ? (
-          <div className="text-center py-8 text-gray-400">
-            📭 Belum ada laporan
-          </div>
+          <div className="text-center py-12 text-gray-400 text-sm font-medium">📭 Belum ada laporan</div>
         ) : (
           <div className="space-y-3">
-            {filtered.map(l => (
-              <div
-                key={l.id}
-                onClick={() => setSelected(l)}
-                className="bg-white rounded-2xl shadow p-4 cursor-pointer active:scale-95 transition-all"
-              >
-                <div className="flex justify-between items-start">
-                  <div>
-                    <div className="flex items-center gap-2">
-                      <span className="font-bold text-gray-800">{l.platform}</span>
-                      <span className={`text-xs px-2 py-0.5 rounded-full font-medium ${STATUS_COLOR[l.status]}`}>
-                        {l.status}
-                      </span>
+            {filtered.map(l => {
+              const style = STATUS_STYLE[l.status] || STATUS_STYLE.baru
+              return (
+                <div
+                  key={l.id}
+                  onClick={() => setSelected(l)}
+                  className="bg-white rounded-2xl p-4 cursor-pointer active:scale-[0.98] transition-all"
+                  style={{ boxShadow: '0 4px 16px rgba(0,0,0,0.06)' }}
+                >
+                  <div className="flex justify-between items-start">
+                    <div className="flex items-start gap-3">
+                      <div className="w-10 h-10 rounded-xl flex items-center justify-center flex-shrink-0"
+                        style={{ background: 'linear-gradient(135deg,#f97316,#dc2626)' }}
+                      >
+                        <Car size={18} color="white" weight="fill" />
+                      </div>
+                      <div>
+                        <div className="flex items-center gap-2">
+                          <span className="font-bold text-gray-800 text-sm">{l.platform}</span>
+                          <span className="text-[10px] px-2 py-0.5 rounded-full font-bold"
+                            style={{ background: style.bg, color: style.text }}
+                          >
+                            {style.label}
+                          </span>
+                        </div>
+                        <p className="text-xs text-gray-400 mt-1 flex items-center gap-1">
+                          <MapPin size={11} weight="fill" /> {l.lokasi} • {l.jarak} km
+                        </p>
+                      </div>
                     </div>
-                    <p className="text-xs text-gray-500 mt-1">
-                      📍 {l.lokasi} • 🚗 {l.jarak} km
-                    </p>
-                  </div>
-                  <div className="text-right">
-                    <p className="text-sm font-bold text-red-600">
-                      {l.selisih > 0
-                        ? `-Rp ${l.selisih.toLocaleString('id-ID')}`
-                        : '✅'
-                      }
-                    </p>
-                    <p className="text-xs text-gray-400">
-                      {new Date(l.created_at).toLocaleDateString('id-ID')}
-                    </p>
+                    <div className="text-right">
+                      <p className="text-sm font-extrabold" style={{ color: l.selisih > 0 ? '#dc2626' : '#16a34a' }}>
+                        {l.selisih > 0 ? `-Rp${(l.selisih/1000).toFixed(0)}rb` : '✓ Sesuai'}
+                      </p>
+                      <p className="text-[10px] text-gray-400 mt-1">
+                        {new Date(l.created_at).toLocaleDateString('id-ID', { day: 'numeric', month: 'short' })}
+                      </p>
+                    </div>
                   </div>
                 </div>
-              </div>
-            ))}
+              )
+            })}
           </div>
         )}
       </div>
 
       {/* Modal Detail */}
       {selected && (
-        <div className="fixed inset-0 bg-black/50 z-50 flex items-end">
-          <div className="bg-white rounded-t-2xl w-full max-h-[85vh] overflow-y-auto p-4 space-y-4">
-
-            <div className="flex justify-between items-center">
-              <h2 className="font-bold text-gray-800">Detail Laporan</h2>
-              <button
-                onClick={() => setSelected(null)}
-                className="text-gray-400 text-xl"
-              >×</button>
+        <div className="fixed inset-0 z-50 flex items-end" style={{ background: 'rgba(0,0,0,0.5)' }}>
+          <div className="bg-white rounded-t-3xl w-full max-h-[88vh] overflow-y-auto"
+            style={{ animation: 'slideUp 0.3s ease-out' }}
+          >
+            <div className="sticky top-0 bg-white p-4 flex justify-between items-center border-b border-gray-100 rounded-t-3xl">
+              <h2 className="font-extrabold text-gray-800">Detail Laporan</h2>
+              <button onClick={() => setSelected(null)}
+                className="w-8 h-8 rounded-full flex items-center justify-center"
+                style={{ background: '#f3f4f6' }}
+              >
+                <X size={16} weight="bold" />
+              </button>
             </div>
 
-            {/* Info */}
-            <div className="bg-gray-50 rounded-xl p-3 space-y-2 text-sm">
-              <div className="flex justify-between">
-                <span className="text-gray-500">Platform</span>
-                <span className="font-semibold">{selected.platform}</span>
+            <div className="p-4 space-y-4">
+              {/* Info Grid */}
+              <div className="bg-gray-50 rounded-2xl p-4 space-y-3">
+                {[
+                  { icon: Car, label: 'Platform', value: selected.platform },
+                  { icon: MapPin, label: 'Jarak', value: `${selected.jarak} km` },
+                  { icon: Warning, label: 'Tarif diterima', value: `Rp ${selected.tarif_diterima.toLocaleString('id-ID')}`, color: '#dc2626' },
+                  { icon: CheckCircle, label: 'Tarif seharusnya', value: `Rp ${selected.tarif_seharusnya.toLocaleString('id-ID')}`, color: '#16a34a' },
+                  { icon: MapPin, label: 'Lokasi', value: selected.lokasi },
+                  { icon: Clock, label: 'Waktu', value: new Date(selected.waktu_kejadian).toLocaleString('id-ID') },
+                ].map((item, i) => (
+                  <div key={i} className="flex justify-between items-center text-sm">
+                    <span className="text-gray-400 flex items-center gap-1.5 text-xs font-medium">
+                      <item.icon size={14} weight="fill" /> {item.label}
+                    </span>
+                    <span className="font-bold text-gray-800" style={{ color: item.color }}>{item.value}</span>
+                  </div>
+                ))}
+                <div className="pt-2 border-t border-gray-200 flex justify-between items-center">
+                  <span className="text-xs font-bold text-gray-500">SELISIH</span>
+                  <span className="font-extrabold text-red-600">Rp {selected.selisih.toLocaleString('id-ID')}</span>
+                </div>
+                {selected.no_hp_driver && (
+                  <div className="flex justify-between items-center text-sm">
+                    <span className="text-gray-400 flex items-center gap-1.5 text-xs font-medium">
+                      <Phone size={14} weight="fill" /> No. HP
+                    </span>
+                    <span className="font-bold text-gray-800">{selected.no_hp_driver}</span>
+                  </div>
+                )}
               </div>
-              <div className="flex justify-between">
-                <span className="text-gray-500">Jarak</span>
-                <span className="font-semibold">{selected.jarak} km</span>
-              </div>
-              <div className="flex justify-between">
-                <span className="text-gray-500">Tarif diterima</span>
-                <span className="font-semibold text-red-600">
-                  Rp {selected.tarif_diterima.toLocaleString('id-ID')}
-                </span>
-              </div>
-              <div className="flex justify-between">
-                <span className="text-gray-500">Tarif seharusnya</span>
-                <span className="font-semibold text-green-600">
-                  Rp {selected.tarif_seharusnya.toLocaleString('id-ID')}
-                </span>
-              </div>
-              <div className="flex justify-between">
-                <span className="text-gray-500">Selisih</span>
-                <span className="font-bold text-red-600">
-                  Rp {selected.selisih.toLocaleString('id-ID')}
-                </span>
-              </div>
-              <div className="flex justify-between">
-                <span className="text-gray-500">Lokasi</span>
-                <span className="font-semibold">{selected.lokasi}</span>
-              </div>
-              <div className="flex justify-between">
-                <span className="text-gray-500">Waktu</span>
-                <span className="font-semibold">
-                  {new Date(selected.waktu_kejadian).toLocaleString('id-ID')}
-                </span>
-              </div>
-              {selected.no_hp_driver && (
-                <div className="flex justify-between">
-                  <span className="text-gray-500">No. HP</span>
-                  <span className="font-semibold">{selected.no_hp_driver}</span>
+
+              {/* AI Analysis */}
+              {selected.analisis_ai && (
+                <div className="rounded-2xl p-4" style={{ background: 'linear-gradient(135deg, #eff6ff, #eef2ff)' }}>
+                  <p className="text-xs font-extrabold text-blue-700 mb-2 flex items-center gap-1.5">
+                    <Robot size={16} weight="fill" /> Analisis AI
+                  </p>
+                  <p className="text-xs text-blue-600 leading-relaxed">{selected.analisis_ai}</p>
                 </div>
               )}
-            </div>
 
-            {/* Analisis AI */}
-            {selected.analisis_ai && (
-              <div className="bg-blue-50 rounded-xl p-3">
-                <p className="text-xs font-semibold text-blue-700 mb-1">🤖 Analisis AI</p>
-                <p className="text-xs text-blue-600">{selected.analisis_ai}</p>
-              </div>
-            )}
+              {/* Screenshots */}
+              {selected.screenshots?.length > 0 && (
+                <div>
+                  <p className="text-sm font-bold text-gray-700 mb-2">📸 Screenshot Bukti</p>
+                  <div className="grid grid-cols-2 gap-2">
+                    {selected.screenshots.map((url, i) => (
+                      <a key={i} href={url} target="_blank" rel="noopener noreferrer">
+                        <img src={url} alt={`Screenshot ${i+1}`} className="w-full rounded-xl object-cover" style={{ boxShadow: '0 4px 12px rgba(0,0,0,0.1)' }} />
+                      </a>
+                    ))}
+                  </div>
+                </div>
+              )}
 
-            {/* Screenshots */}
-            {selected.screenshots && selected.screenshots.length > 0 && (
+              {/* Update Status */}
               <div>
-                <p className="text-sm font-semibold text-gray-700 mb-2">📸 Screenshot Bukti</p>
-                <div className="grid grid-cols-2 gap-2">
-                  {selected.screenshots.map((url, i) => (
-                    <a key={i} href={url} target="_blank" rel="noopener noreferrer">
-                      <img
-                        src={url}
-                        alt={`Screenshot ${i + 1}`}
-                        className="w-full rounded-xl object-cover"
-                      />
-                    </a>
-                  ))}
+                <p className="text-sm font-bold text-gray-700 mb-2">Update Status</p>
+                <div className="grid grid-cols-3 gap-2">
+                  {['baru', 'proses', 'selesai'].map(s => {
+                    const style = STATUS_STYLE[s]
+                    const active = selected.status === s
+                    return (
+                      <button
+                        key={s}
+                        onClick={() => updateStatus(selected.id, s)}
+                        className="py-2.5 rounded-xl text-xs font-bold transition-all"
+                        style={active ? {
+                          background: 'linear-gradient(135deg, #dc2626, #f97316)',
+                          color: 'white',
+                          boxShadow: '0 4px 12px rgba(220,38,38,0.35)'
+                        } : { background: style.bg, color: style.text }}
+                      >
+                        {style.label}
+                      </button>
+                    )
+                  })}
                 </div>
               </div>
-            )}
-
-            {/* Update Status */}
-            <div>
-              <p className="text-sm font-semibold text-gray-700 mb-2">Update Status</p>
-              <div className="grid grid-cols-3 gap-2">
-                {['baru', 'proses', 'selesai'].map(s => (
-                  <button
-                    key={s}
-                    onClick={() => updateStatus(selected.id, s)}
-                    className={`py-2 rounded-xl text-sm font-medium transition-all ${
-                      selected.status === s
-                        ? 'bg-red-500 text-white'
-                        : 'bg-gray-100 text-gray-600'
-                    }`}
-                  >
-                    {s.charAt(0).toUpperCase() + s.slice(1)}
-                  </button>
-                ))}
-              </div>
             </div>
-
           </div>
         </div>
       )}
 
+      <style>{`
+        @keyframes slideUp {
+          from { transform: translateY(100%); }
+          to { transform: translateY(0); }
+        }
+      `}</style>
     </div>
   )
-}
+            }
