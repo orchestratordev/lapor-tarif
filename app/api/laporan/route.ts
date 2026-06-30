@@ -27,15 +27,15 @@ try {
   console.error('AI Error:', aiError)
 }
 
-    // 2. Simpan ke Supabase (tanpa selisih — auto generated)
+   // 2. Simpan ke Supabase (tanpa selisih — auto generated)
     const { data, error } = await supabase
       .from('laporan')
       .insert({
         platform: body.platform,
         jenis_layanan: 'Mobil',
         jarak: body.jarak,
-        tarif_diterima: body.tarif_diterima,
-        tarif_seharusnya: body.tarif_seharusnya,
+        tarif_diterima: Math.round(body.tarif_diterima),
+        tarif_seharusnya: Math.round(body.tarif_seharusnya),
         lokasi: body.lokasi,
         waktu_kejadian: body.waktu_kejadian,
         no_hp_driver: body.no_hp_driver || null,
@@ -44,7 +44,7 @@ try {
         status: 'baru'
       })
       .select()
-      .single()
+      .single() 
 
     if (error) throw error
 
