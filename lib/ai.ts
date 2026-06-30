@@ -6,7 +6,7 @@ export async function analisisLaporan(data: {
   selisih: number
   lokasi: string
 }) {
-  const prompt = `Kamu adalah analis pelanggaran tarif taxi online R4 Kalimantan Selatan.
+  const prompt = `Kamu adalah analis pelanggaran tarif Taxi Online R4 Kalimantan Selatan.
 
 Data laporan:
 - Platform: ${data.platform}
@@ -21,14 +21,14 @@ Berikan analisis singkat (3-4 kalimat):
 2. Dampak ke driver
 3. Rekomendasi tindakan`
 
-  const response = await fetch('https://api.openai.com/v1/chat/completions', {
+  const response = await fetch('https://api.groq.com/openai/v1/chat/completions', {
     method: 'POST',
     headers: {
-      'Authorization': `Bearer ${process.env.OPENAI_API_KEY}`,
+      'Authorization': `Bearer ${process.env.GROQ_API_KEY}`,
       'Content-Type': 'application/json'
     },
     body: JSON.stringify({
-      model: 'gpt-4o-mini',
+      model: 'llama-3.3-70b-versatile',
       messages: [{ role: 'user', content: prompt }],
       max_tokens: 300
     })
