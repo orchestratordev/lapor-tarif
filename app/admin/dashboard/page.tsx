@@ -35,8 +35,9 @@ type Laporan = {
 
 const STATUS_STYLE: Record<string, { bg: string; text: string; label: string }> = {
   baru: { bg: 'linear-gradient(135deg, #fef2f2, #fee2e2)', text: '#dc2626', label: 'Baru' },
-  proses: { bg: 'linear-gradient(135deg, #fffbeb, #fef3c7)', text: '#d97706', label: 'Proses' },
-  selesai: { bg: 'linear-gradient(135deg, #f0fdf4, #dcfce7)', text: '#16a34a', label: 'Selesai' }
+  terverifikasi: { bg: 'linear-gradient(135deg, #eff6ff, #dbeafe)', text: '#2563eb', label: 'Terverifikasi' },
+  dilaporkan: { bg: 'linear-gradient(135deg, #fffbeb, #fef3c7)', text: '#d97706', label: 'Dilaporkan' },
+  ditindaklanjuti: { bg: 'linear-gradient(135deg, #f0fdf4, #dcfce7)', text: '#16a34a', label: 'Ditindaklanjuti' }
 }
 
 export default function Dashboard() {
@@ -300,34 +301,29 @@ export default function Dashboard() {
               )}
 
               {/* Update Status */}
-              <div>
-                <p className="text-sm font-bold text-gray-700 mb-2">Update Status</p>
-                <div className="grid grid-cols-3 gap-2">
-                  {['baru', 'proses', 'selesai'].map(s => {
-                    const style = STATUS_STYLE[s]
-                    const active = selected.status === s
-                    return (
-                      <button
-                        key={s}
-                        onClick={() => updateStatus(selected.id, s)}
-                        className="py-2.5 rounded-xl text-xs font-bold transition-all"
-                        style={active ? {
-                          background: 'linear-gradient(135deg, #dc2626, #f97316)',
-                          color: 'white',
-                          boxShadow: '0 4px 12px rgba(220,38,38,0.35)'
-                        } : { background: style.bg, color: style.text }}
-                      >
-                        {style.label}
-                      </button>
-                    )
-                  })}
-                </div>
-              </div>
-            </div>
-          </div>
-        </div>
-      )}
-
+<div>
+  <p className="text-sm font-bold text-gray-700 mb-2">Update Status</p>
+  <div className="grid grid-cols-2 gap-2">
+    {['baru', 'terverifikasi', 'dilaporkan', 'ditindaklanjuti'].map(s => {
+      const style = STATUS_STYLE[s]
+      const active = selected.status === s
+      return (
+        <button
+          key={s}
+          onClick={() => updateStatus(selected.id, s)}
+          className="py-2.5 rounded-xl text-xs font-bold transition-all"
+          style={active ? {
+            background: 'linear-gradient(135deg, #dc2626, #f97316)',
+            color: 'white',
+            boxShadow: '0 4px 12px rgba(220,38,38,0.35)'
+          } : { background: style.bg, color: style.text }}
+        >
+          {style.label}
+        </button>
+      )
+    })}
+  </div>
+</div>
       <style>{`
         @keyframes slideUp {
           from { transform: translateY(100%); }
