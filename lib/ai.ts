@@ -6,7 +6,7 @@ export async function analisisLaporan(data: {
   selisih: number
   lokasi: string
 }) {
-  const prompt = `Kamu adalah analis pelanggaran tarif ojek online Kalimantan Selatan.
+  const prompt = `Kamu adalah analis pelanggaran tarif taxi online R4 Kalimantan Selatan.
 
 Data laporan:
 - Platform: ${data.platform}
@@ -21,20 +21,19 @@ Berikan analisis singkat (3-4 kalimat):
 2. Dampak ke driver
 3. Rekomendasi tindakan`
 
-  const response = await fetch('https://api.anthropic.com/v1/messages', {
+  const response = await fetch('https://api.openai.com/v1/chat/completions', {
     method: 'POST',
     headers: {
-      'x-api-key': process.env.ANTHROPIC_API_KEY!,
-      'anthropic-version': '2023-06-01',
+      'Authorization': `Bearer ${process.env.OPENAI_API_KEY}`,
       'Content-Type': 'application/json'
     },
     body: JSON.stringify({
-      model: 'claude-sonnet-4-6',
-      max_tokens: 300,
-      messages: [{ role: 'user', content: prompt }]
+      model: 'gpt-4o-mini',
+      messages: [{ role: 'user', content: prompt }],
+      max_tokens: 300
     })
   })
 
   const result = await response.json()
-  return result.content[0].text
+  return result.choices[0].message.content
 }
