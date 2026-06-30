@@ -34,9 +34,8 @@ const FLAGFALL_KM = 3
 
 function hitungTarifSeharusnya(jarak: number): number {
   if (jarak <= FLAGFALL_KM) return FLAGFALL
-  return FLAGFALL + ((jarak - FLAGFALL_KM) * TBB)
+  return Math.round(FLAGFALL + ((jarak - FLAGFALL_KM) * TBB))
 }
-
 // Splash Screen
 function SplashScreen({ onDone }: { onDone: () => void }) {
   const [progress, setProgress] = useState(0)
