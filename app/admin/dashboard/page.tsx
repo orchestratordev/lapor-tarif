@@ -30,6 +30,7 @@ type Laporan = {
   analisis_ai: string
   status: string
   screenshots: string[]
+  catatan: string
   created_at: string
 }
 
@@ -45,6 +46,7 @@ export default function Dashboard() {
   const [loading, setLoading] = useState(true)
   const [filter, setFilter] = useState('semua')
   const [selected, setSelected] = useState<Laporan | null>(null)
+  const [catatan, setCatatan] = useState('')
   const router = useRouter()
 
   useEffect(() => {
@@ -74,9 +76,20 @@ export default function Dashboard() {
   }
 
   const updateStatus = async (id: string, status: string) => {
-    await supabase.from('laporan').update({ status }).eq('id', id)
+    await supabase
+      .from('laporan')
+      .update({ status, tanggal_status_update: new Date().toISOString() })
+      .eq('id', id)
     fetchLaporan()
     setSelected(null)
+  }
+
+  const simpanCatatan = async (id: string, text: string) => {
+    await supabase
+      .from('laporan')
+      .update({ catatan: text, tanggal_status_update: new Date().toISOString() })
+      .eq('id', id)
+    fetchLaporan()
   }
 
   const handleLogout = async () => {
@@ -89,8 +102,9 @@ export default function Dashboard() {
   const stats = {
     total: laporan.length,
     baru: laporan.filter(l => l.status === 'baru').length,
-    proses: laporan.filter(l => l.status === 'proses').length,
-    selesai: laporan.filter(l => l.status === 'selesai').length
+    terverifikasi: laporan.filter(l => l.status === 'terverifikasi').length,
+    dilaporkan: laporan.filter(l => l.status === 'dilaporkan').length,
+    ditindaklanjuti: laporan.filter(l => l.status === 'ditindaklanjuti').length
   }
 
   return (
@@ -128,18 +142,19 @@ export default function Dashboard() {
       <div className="max-w-2xl mx-auto p-4 -mt-4 relative z-10 space-y-4">
 
         {/* Stats */}
-        <div className="grid grid-cols-4 gap-2">
+        <div className="grid grid-cols-5 gap-1.5">
           {[
             { label: 'Total', value: stats.total, grad: 'linear-gradient(135deg,#475569,#64748b)' },
             { label: 'Baru', value: stats.baru, grad: 'linear-gradient(135deg,#dc2626,#f97316)' },
-            { label: 'Proses', value: stats.proses, grad: 'linear-gradient(135deg,#d97706,#f59e0b)' },
-            { label: 'Selesai', value: stats.selesai, grad: 'linear-gradient(135deg,#16a34a,#22c55e)' },
+            { label: 'Verif', value: stats.terverifikasi, grad: 'linear-gradient(135deg,#2563eb,#3b82f6)' },
+            { label: 'Lapor', value: stats.dilaporkan, grad: 'linear-gradient(135deg,#d97706,#f59e0b)' },
+            { label: 'Selesai', value: stats.ditindaklanjuti, grad: 'linear-gradient(135deg,#16a34a,#22c55e)' },
           ].map(s => (
-            <div key={s.label} className="rounded-2xl p-3 text-center text-white"
+            <div key={s.label} className="rounded-2xl p-2 text-center text-white"
               style={{ background: s.grad, boxShadow: '0 6px 16px rgba(0,0,0,0.12)' }}
             >
-              <p className="text-xl font-extrabold">{s.value}</p>
-              <p className="text-[10px] font-semibold opacity-90 mt-0.5">{s.label}</p>
+              <p className="text-lg font-extrabold">{s.value}</p>
+              <p className="text-[9px] font-semibold opacity-90 mt-0.5">{s.label}</p>
             </div>
           ))}
         </div>
@@ -147,11 +162,11 @@ export default function Dashboard() {
         {/* Filter + Refresh */}
         <div className="flex gap-2">
           <div className="flex gap-2 overflow-x-auto flex-1">
-            {['semua', 'baru', 'proses', 'selesai'].map(f => (
+            {['semua', 'baru', 'terverifikasi', 'dilaporkan', 'ditindaklanjuti'].map(f => (
               <button
                 key={f}
                 onClick={() => setFilter(f)}
-                className="px-4 py-2.5 rounded-xl text-xs font-bold whitespace-nowrap transition-all"
+                className="px-3 py-2.5 rounded-xl text-xs font-bold whitespace-nowrap transition-all"
                 style={filter === f ? {
                   background: 'linear-gradient(135deg, #dc2626, #f97316)',
                   color: 'white',
@@ -162,7 +177,7 @@ export default function Dashboard() {
                   boxShadow: '0 2px 6px rgba(0,0,0,0.06)'
                 }}
               >
-                {f.charAt(0).toUpperCase() + f.slice(1)}
+                {f === 'semua' ? 'Semua' : STATUS_STYLE[f]?.label || f}
               </button>
             ))}
           </div>
@@ -187,7 +202,7 @@ export default function Dashboard() {
               return (
                 <div
                   key={l.id}
-                  onClick={() => setSelected(l)}
+                  onClick={() => { setSelected(l); setCatatan(l.catatan || '') }}
                   className="bg-white rounded-2xl p-4 cursor-pointer active:scale-[0.98] transition-all"
                   style={{ boxShadow: '0 4px 16px rgba(0,0,0,0.06)' }}
                 >
@@ -300,30 +315,55 @@ export default function Dashboard() {
                 </div>
               )}
 
+              {/* Catatan */}
+              <div>
+                <p className="text-sm font-bold text-gray-700 mb-2">📝 Catatan Tindak Lanjut</p>
+                <textarea
+                  value={catatan}
+                  onChange={e => setCatatan(e.target.value)}
+                  placeholder="Tulis catatan progress, nomor surat, atau hasil koordinasi..."
+                  rows={3}
+                  className="w-full rounded-xl p-3 text-sm focus:outline-none"
+                  style={{ background: '#f8f8fa', boxShadow: '0 2px 8px rgba(0,0,0,0.06)' }}
+                />
+                <button
+                  onClick={() => simpanCatatan(selected.id, catatan)}
+                  className="mt-2 w-full py-2.5 rounded-xl text-xs font-bold text-white"
+                  style={{ background: 'linear-gradient(135deg, #3b82f6, #6366f1)' }}
+                >
+                  💾 Simpan Catatan
+                </button>
+              </div>
+
               {/* Update Status */}
-<div>
-  <p className="text-sm font-bold text-gray-700 mb-2">Update Status</p>
-  <div className="grid grid-cols-2 gap-2">
-    {['baru', 'terverifikasi', 'dilaporkan', 'ditindaklanjuti'].map(s => {
-      const style = STATUS_STYLE[s]
-      const active = selected.status === s
-      return (
-        <button
-          key={s}
-          onClick={() => updateStatus(selected.id, s)}
-          className="py-2.5 rounded-xl text-xs font-bold transition-all"
-          style={active ? {
-            background: 'linear-gradient(135deg, #dc2626, #f97316)',
-            color: 'white',
-            boxShadow: '0 4px 12px rgba(220,38,38,0.35)'
-          } : { background: style.bg, color: style.text }}
-        >
-          {style.label}
-        </button>
-      )
-    })}
-  </div>
-</div>
+              <div>
+                <p className="text-sm font-bold text-gray-700 mb-2">Update Status</p>
+                <div className="grid grid-cols-2 gap-2">
+                  {['baru', 'terverifikasi', 'dilaporkan', 'ditindaklanjuti'].map(s => {
+                    const style = STATUS_STYLE[s]
+                    const active = selected.status === s
+                    return (
+                      <button
+                        key={s}
+                        onClick={() => updateStatus(selected.id, s)}
+                        className="py-2.5 rounded-xl text-xs font-bold transition-all"
+                        style={active ? {
+                          background: 'linear-gradient(135deg, #dc2626, #f97316)',
+                          color: 'white',
+                          boxShadow: '0 4px 12px rgba(220,38,38,0.35)'
+                        } : { background: style.bg, color: style.text }}
+                      >
+                        {style.label}
+                      </button>
+                    )
+                  })}
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
+
       <style>{`
         @keyframes slideUp {
           from { transform: translateY(100%); }
@@ -332,4 +372,4 @@ export default function Dashboard() {
       `}</style>
     </div>
   )
-            }
+                                                                   }
