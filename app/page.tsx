@@ -587,7 +587,7 @@ export default function Home() {
         </div>
 
         <p className="text-center text-[10px] text-gray-300 pb-6">
-          v2.0 — lapor-tarif.vercel.app
+          v2.0 — lapor-Tarif ASK
         </p>
 
       </div>
