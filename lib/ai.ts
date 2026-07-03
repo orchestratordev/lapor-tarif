@@ -24,7 +24,7 @@ Berikan analisis singkat (3-4 kalimat):
   const response = await fetch('https://api.nararouter.com/v1/chat/completions', {
     method: 'POST',
     headers: {
-      'Authorization': `Bearer ${process.env.NARA_API_KEY}`,
+      'Authorization': `Bearer ${process.env.BYNARA_API_KEY}`,
       'Content-Type': 'application/json'
     },
     body: JSON.stringify({
