@@ -21,7 +21,7 @@ Berikan analisis singkat (3-4 kalimat):
 2. Dampak ke driver
 3. Rekomendasi tindakan`
 
-  const response = await fetch('https://api.nararouter.com/v1/chat/completions', {
+  const response = await fetch('https://router.bynara.id/v1/chat/completions', {
     method: 'POST',
     headers: {
       'Authorization': `Bearer ${process.env.BYNARA_API_KEY}`,
