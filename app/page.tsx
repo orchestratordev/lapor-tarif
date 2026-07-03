@@ -198,17 +198,17 @@ export default function Home() {
   }
 
   const resetForm = () => {
-    setSukses(false)
-    setScreenshots([])
-    setForm({
-    setCatatan('')  
-      platform: '',
-      jarak: '',
-      tarif_diterima: '',
-      lokasi: '',
-      waktu_kejadian: '',
-      no_hp_driver: ''
-    })
+  setSukses(false)
+  setScreenshots([])
+  setCatatan('')
+  setForm({
+    platform: '',
+    jarak: '',
+    tarif_diterima: '',
+    lokasi: '',
+    waktu_kejadian: '',
+    no_hp_driver: ''
+  })
   }
 
   if (showSplash) return <SplashScreen onDone={() => setShowSplash(false)} />
