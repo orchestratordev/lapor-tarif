@@ -36,7 +36,8 @@ import {
   PaperPlaneTilt,
   ArrowRight,
   ShieldCheck,
-  Buildings
+  Buildings,
+  ChatText
 } from '@phosphor-icons/react'
 
 function SplashScreen({ onDone }: { onDone: () => void }) {
@@ -122,7 +123,7 @@ export default function Home() {
   const [loading, setLoading] = useState(false)
   const [sukses, setSukses] = useState(false)
   const [error, setError] = useState('')
-
+  const [catatan, setCatatan] = useState('')
   const tarifSeharusnya = form.jarak
     ? hitungTarifSeharusnya(Number(form.jarak))
     : 0
@@ -178,7 +179,8 @@ export default function Home() {
           lokasi: form.lokasi,
           waktu_kejadian: new Date(form.waktu_kejadian).toISOString(),
           no_hp_driver: form.no_hp_driver,
-          screenshots: screenshotUrls
+          screenshots: screenshotUrls,
+          catatan: catatan
         })
       })
 
@@ -199,6 +201,7 @@ export default function Home() {
     setSukses(false)
     setScreenshots([])
     setForm({
+    setCatatan('')  
       platform: '',
       jarak: '',
       tarif_diterima: '',
@@ -522,6 +525,23 @@ export default function Home() {
           )}
         </div>
 
+        {/* Catatan */}
+<div className="bg-white rounded-2xl p-4"
+  style={{ boxShadow: '0 4px 16px rgba(0,0,0,0.06)' }}
+>
+  <label className="text-sm font-bold text-gray-700 flex items-center gap-2 mb-3">
+    <ChatText size={16} weight="fill" color="#dc2626" />
+    Ceritakan Kejadiannya <span className="text-gray-400 font-normal text-xs ml-1">(opsional)</span>
+  </label>
+  <textarea
+    placeholder="Contoh: jarak jemput jauh, menunggu terlalu lama, konsumen membatalkan sepihak, dll..."
+    value={catatan}
+    onChange={e => setCatatan(e.target.value)}
+    rows={3}
+    className="w-full rounded-xl p-3 text-sm font-medium focus:outline-none"
+    style={{ background: '#f8f8fa', boxShadow: '0 2px 8px rgba(0,0,0,0.06)' }}
+  />
+</div>
         {/* No HP */}
         <div className="bg-white rounded-2xl p-4"
           style={{ boxShadow: '0 4px 16px rgba(0,0,0,0.06)' }}
