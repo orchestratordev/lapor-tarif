@@ -28,7 +28,7 @@ Berikan analisis singkat (3-4 kalimat):
       'Content-Type': 'application/json'
     },
     body: JSON.stringify({
-      model: 'claude-haiku-4.5',
+      model: 'mistral-large',
       messages: [{ role: 'user', content: prompt }],
       max_tokens: 300
     })
