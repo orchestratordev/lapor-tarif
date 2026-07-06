@@ -161,37 +161,7 @@ export default function Dashboard() {
   // ── Export PDF (print) ──────────────────────────────────────────────────────
   const exportPDF = () => {
   setShowExportMenu(false)
-  
-  // Buka window baru khusus print
-  const printWindow = window.open('', '_blank')
-  if (!printWindow) return
-
-  const content = document.getElementById('print-area')?.innerHTML
-  if (!content) return
-
-  printWindow.document.write(`
-    <!DOCTYPE html>
-    <html>
-    <head>
-      <meta charset="UTF-8">
-      <title>Rekap Laporan Tarif ASK Kalsel</title>
-      <style>
-        body { font-family: Arial, sans-serif; padding: 20px; color: #111; }
-        table { width: 100%; border-collapse: collapse; font-size: 10px; }
-        th { background: #b91c1c; color: white; padding: 6px; text-align: left; }
-        td { padding: 5px 6px; border-bottom: 1px solid #f0f0f0; }
-        tr:nth-child(even) { background: #f9f9f9; }
-        @page { margin: 15mm; size: A4; }
-      </style>
-    </head>
-    <body>${content}</body>
-    </html>
-  `)
-  printWindow.document.close()
-  setTimeout(() => {
-    printWindow.print()
-    printWindow.close()
-  }, 500)
+  window.open('/admin/print', '_blank')
   }
 
   return (
