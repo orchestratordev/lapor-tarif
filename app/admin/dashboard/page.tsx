@@ -160,12 +160,15 @@ export default function Dashboard() {
 
   // ── Export PDF (print) ──────────────────────────────────────────────────────
   const exportPDF = () => {
-    setExporting(true)
-    setShowExportMenu(false)
+  setShowExportMenu(false)
+  const printArea = document.getElementById('print-area')
+  if (printArea) {
+    printArea.style.display = 'block'
     setTimeout(() => {
       window.print()
-      setExporting(false)
-    }, 400)
+      printArea.style.display = 'none'
+    }, 500)
+  }
   }
 
   return (
@@ -182,7 +185,7 @@ export default function Dashboard() {
       `}</style>
 
       {/* ── PRINT AREA ─────────────────────────────────────────────────────── */}
-      <div id="print-area" ref={printRef} style={{ display: exporting ? 'block' : 'none', background: '#fff', padding: 24 }}>
+      <div id="print-area" ref={printRef} style={{ display: 'none', background: '#fff', padding: 24 }}>
         {/* Header PDF */}
         <div style={{ borderBottom: '3px solid #dc2626', paddingBottom: 14, marginBottom: 18 }}>
           <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start' }}>
