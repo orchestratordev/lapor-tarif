@@ -359,9 +359,9 @@ export default function Dashboard() {
           </div>
         </div>
 
-        <div className="max-w-2xl mx-auto p-4 -mt-4 relative z-10 space-y-3">  {/* ← ganti space-y-4 jadi space-y-3 */}
+        <div className="max-w-2xl mx-auto p-4 -mt-4 relative z-10 space-y-3">  
           {/* Stats Grid */}
-<div className="grid grid-cols-5 gap-2 mt-2">  {/* ← ganti gap-1.5 jadi gap-2, tambahin mt-2 */}
+<div className="grid grid-cols-5 gap-2 mt-2">  
   {[
     { label: 'Total', value: stats.total, grad: 'linear-gradient(135deg,#475569,#64748b)' },
     { label: 'Baru', value: stats.baru, grad: 'linear-gradient(135deg,#dc2626,#f97316)' },
@@ -369,7 +369,7 @@ export default function Dashboard() {
     { label: 'Lapor', value: stats.dilaporkan, grad: 'linear-gradient(135deg,#d97706,#f59e0b)' },
     { label: 'Selesai', value: stats.ditindaklanjuti, grad: 'linear-gradient(135deg,#16a34a,#22c55e)' },
   ].map(s => (
-    <div key={s.label} className="rounded-2xl p-2.5 text-center text-white"  {/* ← ganti p-2 jadi p-2.5 */}
+    <div key={s.label} className="rounded-2xl p-2.5 text-center text-white"  
       style={{ background: s.grad, boxShadow: '0 6px 16px rgba(0,0,0,0.12)' }}
     >
       <p className="text-lg font-extrabold">{s.value}</p>
