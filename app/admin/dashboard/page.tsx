@@ -305,9 +305,9 @@ export default function Dashboard() {
       <div className="min-h-screen no-print" style={{ background: '#f8f8fa' }}>
 
         {/* Header */}
-        <div className="relative overflow-hidden"
-          style={{ background: 'linear-gradient(135deg,#b91c1c 0%,#dc2626 60%,#f97316 100%)', paddingBottom: 28 }}
-        >
+<div className="relative overflow-hidden"
+  style={{ background: 'linear-gradient(135deg,#b91c1c 0%,#dc2626 60%,#f97316 100%)', paddingBottom: 36 }}  {/* ← ganti 28 jadi 36 */}
+>
           <div className="relative p-6 pt-8 flex justify-between items-center max-w-2xl mx-auto">
             <div className="flex items-center gap-2">
               <ShieldCheck size={26} color="white" weight="fill" />
@@ -360,25 +360,24 @@ export default function Dashboard() {
           </div>
         </div>
 
-        <div className="max-w-2xl mx-auto p-4 -mt-4 relative z-10 space-y-4">
-
+        <div className="max-w-2xl mx-auto p-4 -mt-4 relative z-10 space-y-3">  {/* ← ganti space-y-4 jadi space-y-3 */}
           {/* Stats Grid */}
-          <div className="grid grid-cols-5 gap-1.5">
-            {[
-              { label: 'Total', value: stats.total, grad: 'linear-gradient(135deg,#475569,#64748b)' },
-              { label: 'Baru', value: stats.baru, grad: 'linear-gradient(135deg,#dc2626,#f97316)' },
-              { label: 'Verif', value: stats.terverifikasi, grad: 'linear-gradient(135deg,#2563eb,#3b82f6)' },
-              { label: 'Lapor', value: stats.dilaporkan, grad: 'linear-gradient(135deg,#d97706,#f59e0b)' },
-              { label: 'Selesai', value: stats.ditindaklanjuti, grad: 'linear-gradient(135deg,#16a34a,#22c55e)' },
-            ].map(s => (
-              <div key={s.label} className="rounded-2xl p-2 text-center text-white"
-                style={{ background: s.grad, boxShadow: '0 6px 16px rgba(0,0,0,0.12)' }}
-              >
-                <p className="text-lg font-extrabold">{s.value}</p>
-                <p className="text-[9px] font-semibold opacity-90 mt-0.5">{s.label}</p>
-              </div>
-            ))}
-          </div>
+<div className="grid grid-cols-5 gap-2 mt-2">  {/* ← ganti gap-1.5 jadi gap-2, tambahin mt-2 */}
+  {[
+    { label: 'Total', value: stats.total, grad: 'linear-gradient(135deg,#475569,#64748b)' },
+    { label: 'Baru', value: stats.baru, grad: 'linear-gradient(135deg,#dc2626,#f97316)' },
+    { label: 'Verif', value: stats.terverifikasi, grad: 'linear-gradient(135deg,#2563eb,#3b82f6)' },
+    { label: 'Lapor', value: stats.dilaporkan, grad: 'linear-gradient(135deg,#d97706,#f59e0b)' },
+    { label: 'Selesai', value: stats.ditindaklanjuti, grad: 'linear-gradient(135deg,#16a34a,#22c55e)' },
+  ].map(s => (
+    <div key={s.label} className="rounded-2xl p-2.5 text-center text-white"  {/* ← ganti p-2 jadi p-2.5 */}
+      style={{ background: s.grad, boxShadow: '0 6px 16px rgba(0,0,0,0.12)' }}
+    >
+      <p className="text-lg font-extrabold">{s.value}</p>
+      <p className="text-[9px] font-semibold opacity-90 mt-0.5">{s.label}</p>
+    </div>
+  ))}
+</div>
 
           {/* Total Selisih */}
           <div className="bg-white rounded-2xl p-4" style={{ boxShadow: '0 4px 16px rgba(0,0,0,0.06)' }}>
