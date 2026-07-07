@@ -86,73 +86,92 @@ export default function PrintPage() {
       </div>
 
       {/* ============================================ */}
-      {/* GRAFIK 1: BAR CHART PER PLATFORM */}
-      {/* ============================================ */}
-      <div style={{ marginBottom: 24, pageBreakInside: 'avoid' }}>
-        <h3 style={{ fontSize: 13, fontWeight: 700, borderBottom: '1px solid #e5e7eb', paddingBottom: 6, marginBottom: 12 }}>
-          📊 Pelanggaran per Platform
-        </h3>
-        <div style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
-          {platformEntries.map(([platform, count]) => {
-            const widthPercent = (count / maxPlatformCount) * 100
-            return (
-              <div key={platform} style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
-                <span style={{ width: 80, fontSize: 10, fontWeight: 600, textAlign: 'right' }}>
-                  {platform}
-                </span>
-                <div style={{ flex: 1, background: '#f3f4f6', borderRadius: 4, height: 20, overflow: 'hidden' }}>
-                  <div style={{
-                    width: `${widthPercent}%`,
-                    height: '100%',
-                    background: 'linear-gradient(90deg, #dc2626, #ef4444)',
-                    borderRadius: 4,
-                    transition: 'width 0.3s',
-                  }} />
-                </div>
-                <span style={{ width: 30, fontSize: 10, fontWeight: 700, color: '#b91c1c' }}>
-                  {count}
-                </span>
-              </div>
-            )
-          })}
-        </div>
-        {platformEntries.length === 0 && (
-          <p style={{ fontSize: 10, color: '#9ca3af', textAlign: 'center', padding: 16 }}>Belum ada data</p>
-        )}
-      </div>
-
-      {/* ============================================ */}
-      {/* GRAFIK 2: PIE CHART STATUS (SVG NATIVE) */}
-      {/* ============================================ */}
-      <div style={{ marginBottom: 24, pageBreakInside: 'avoid' }}>
-        <h3 style={{ fontSize: 13, fontWeight: 700, borderBottom: '1px solid #e5e7eb', paddingBottom: 6, marginBottom: 12 }}>
-          🥧 Status Laporan
-        </h3>
-        <div style={{ display: 'flex', alignItems: 'center', gap: 20 }}>
-          {/* SVG Pie Chart */}
-          <svg width="100" height="100" viewBox="0 0 32 32">
-            <PieSlices entries={statusEntries} colors={statusColors} />
-          </svg>
-          {/* Legend */}
-          <div style={{ display: 'flex', flexDirection: 'column', gap: 4 }}>
-            {statusEntries.map(([status, count]) => (
-              <div key={status} style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
-                <span style={{
-                  width: 10, height: 10, borderRadius: 2,
-                  background: statusColors[status] || '#6b7280',
-                  display: 'inline-block',
-                }} />
-                <span style={{ fontSize: 10, textTransform: 'capitalize' }}>
-                  {status}
-                </span>
-                <span style={{ fontSize: 10, fontWeight: 700, color: '#374151' }}>
-                  ({count})
-                </span>
-              </div>
-            ))}
+{/* GRAFIK 1: BAR CHART VERTIKAL — Pelanggaran per Platform */}
+{/* ============================================ */}
+<div style={{ marginBottom: 24, pageBreakInside: 'avoid' }}>
+  <h3 style={{ fontSize: 13, fontWeight: 700, borderBottom: '1px solid #e5e7eb', paddingBottom: 6, marginBottom: 16 }}>
+    📊 Jumlah Pelanggaran per Aplikator
+  </h3>
+  
+  {platformEntries.length > 0 ? (
+    <div style={{ display: 'flex', alignItems: 'flex-end', gap: 12, height: 180, paddingBottom: 24, borderBottom: '1px solid #e5e7eb' }}>
+      {platformEntries.map(([platform, count]) => {
+        const heightPercent = (count / maxPlatformCount) * 100
+        return (
+          <div key={platform} style={{ flex: 1, display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 6 }}>
+            {/* Bar */}
+            <div style={{
+              width: '100%',
+              maxWidth: 60,
+              height: `${Math.max(heightPercent, 4)}%`,
+              background: 'linear-gradient(180deg, #ef4444 0%, #dc2626 100%)',
+              borderRadius: '4px 4px 0 0',
+              minHeight: 4,
+            }} />
+            {/* Label */}
+            <span style={{ fontSize: 9, fontWeight: 700, color: '#374151', textAlign: 'center', whiteSpace: 'nowrap' }}>
+              {platform}
+            </span>
+            <span style={{ fontSize: 10, fontWeight: 800, color: '#b91c1c' }}>
+              {count}
+            </span>
           </div>
-        </div>
+        )
+      })}
+    </div>
+  ) : (
+    <p style={{ fontSize: 10, color: '#9ca3af', textAlign: 'center', padding: 16 }}>Belum ada data pelanggaran</p>
+  )}
+</div>
+
+{/* ============================================ */}
+{/* GRAFIK 2: PIE CHART — Persentase per Platform */}
+{/* ============================================ */}
+<div style={{ marginBottom: 24, pageBreakInside: 'avoid' }}>
+  <h3 style={{ fontSize: 13, fontWeight: 700, borderBottom: '1px solid #e5e7eb', paddingBottom: 6, marginBottom: 16 }}>
+    🥧 Persentase Pelanggaran per Aplikator
+  </h3>
+  
+  {platformEntries.length > 0 ? (
+    <div style={{ display: 'flex', alignItems: 'center', gap: 24, flexWrap: 'wrap' }}>
+      {/* SVG Pie Chart */}
+      <svg width="140" height="140" viewBox="0 0 32 32">
+        <PieSlices entries={platformEntries} />
+      </svg>
+      
+      {/* Legend + Persentase */}
+      <div style={{ display: 'flex', flexDirection: 'column', gap: 6 }}>
+        {platformEntries.map(([platform, count], i) => {
+          const percent = ((count / laporan.length) * 100).toFixed(1)
+          const pieColors = ['#dc2626', '#ea580c', '#f59e0b', '#16a34a', '#3b82f6', '#8b5cf6', '#ec4899', '#6b7280']
+          const color = pieColors[i % pieColors.length]
+          
+          return (
+            <div key={platform} style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
+              <span style={{
+                width: 12, height: 12, borderRadius: 3,
+                background: color,
+                display: 'inline-block',
+                flexShrink: 0,
+              }} />
+              <span style={{ fontSize: 10, fontWeight: 600, minWidth: 60 }}>
+                {platform}
+              </span>
+              <span style={{ fontSize: 10, fontWeight: 700, color: '#374151' }}>
+                {count}
+              </span>
+              <span style={{ fontSize: 10, color: '#6b7280' }}>
+                ({percent}%)
+              </span>
+            </div>
+          )
+        })}
       </div>
+    </div>
+  ) : (
+    <p style={{ fontSize: 10, color: '#9ca3af', textAlign: 'center', padding: 16 }}>Belum ada data</p>
+  )}
+</div>
 
       {/* TABLE */}
       <h3 style={{ fontSize: 12, fontWeight: 700, borderBottom: '1px solid #e5e7eb', paddingBottom: 6, marginBottom: 10 }}>
@@ -205,26 +224,28 @@ export default function PrintPage() {
 // ============================================
 // PIE CHART SVG COMPONENT (NATIVE)
 // ============================================
-function PieSlices({ entries, colors }: { entries: [string, number][]; colors: Record<string, string> }) {
+function PieSlices({ entries }: { entries: [string, number][] }) {
   const total = entries.reduce((sum, [, count]) => sum + count, 0)
   if (total === 0) return null
 
+  const pieColors = ['#dc2626', '#ea580c', '#f59e0b', '#16a34a', '#3b82f6', '#8b5cf6', '#ec4899', '#6b7280']
+
   let currentAngle = 0
-  const slices = entries.map(([status, count]) => {
+  const slices = entries.map(([name, count], i) => {
     const angle = (count / total) * 360
     const startAngle = currentAngle
     currentAngle += angle
-    
+
     const startRad = ((startAngle - 90) * Math.PI) / 180
     const endRad = ((startAngle + angle - 90) * Math.PI) / 180
-    
+
     const x1 = 16 + 14 * Math.cos(startRad)
     const y1 = 16 + 14 * Math.sin(startRad)
     const x2 = 16 + 14 * Math.cos(endRad)
     const y2 = 16 + 14 * Math.sin(endRad)
-    
+
     const largeArc = angle > 180 ? 1 : 0
-    
+
     const pathData = [
       `M 16 16`,
       `L ${x1} ${y1}`,
@@ -234,9 +255,9 @@ function PieSlices({ entries, colors }: { entries: [string, number][]; colors: R
 
     return (
       <path
-        key={status}
+        key={name}
         d={pathData}
-        fill={colors[status] || '#6b7280'}
+        fill={pieColors[i % pieColors.length]}
         stroke="white"
         strokeWidth="0.5"
       />
@@ -244,4 +265,4 @@ function PieSlices({ entries, colors }: { entries: [string, number][]; colors: R
   })
 
   return <>{slices}</>
-              }
+      }
