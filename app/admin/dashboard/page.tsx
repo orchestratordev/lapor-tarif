@@ -306,8 +306,7 @@ export default function Dashboard() {
 
         {/* Header */}
 <div className="relative overflow-hidden"
-  style={{ background: 'linear-gradient(135deg,#b91c1c 0%,#dc2626 60%,#f97316 100%)', paddingBottom: 36 }}  {/* ← ganti 28 jadi 36 */}
->
+  style={{ background: 'linear-gradient(135deg,#b91c1c 0%,#dc2626 60%,#f97316 100%)', paddingBottom: 36 }}>
           <div className="relative p-6 pt-8 flex justify-between items-center max-w-2xl mx-auto">
             <div className="flex items-center gap-2">
               <ShieldCheck size={26} color="white" weight="fill" />
