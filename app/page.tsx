@@ -177,10 +177,10 @@ function LandingPage({ onSelect }: { onSelect: (type: 'driver' | 'masyarakat') =
           </button>
         </div>
 
-        {/* Admin / Tim Pengawas */}
+        {/* Tim Pengawas ASK */}
 <button onClick={() => window.location.href = '/admin'}
-  className="w-full bg-white rounded-2xl p-5 text-left transition-all active:scale-[0.98] border-2 border-dashed border-gray-300"
-  style={{ boxShadow: '0 4px 16px rgba(0,0,0,0.04)' }}
+  className="w-full bg-white rounded-2xl p-5 text-left transition-all active:scale-[0.98] border-2 border-transparent mt-4"
+  style={{ boxShadow: '0 2px 8px rgba(0,0,0,0.05)' }}
 >
   <div className="flex items-center gap-4">
     <div className="w-14 h-14 rounded-2xl flex items-center justify-center flex-shrink-0 bg-gray-700">
