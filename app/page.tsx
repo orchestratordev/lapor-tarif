@@ -177,6 +177,25 @@ function LandingPage({ onSelect }: { onSelect: (type: 'driver' | 'masyarakat') =
           </button>
         </div>
 
+        {/* Admin / Tim Pengawas */}
+<button onClick={() => window.location.href = '/admin'}
+  className="w-full bg-white rounded-2xl p-5 text-left transition-all active:scale-[0.98] border-2 border-dashed border-gray-300"
+  style={{ boxShadow: '0 4px 16px rgba(0,0,0,0.04)' }}
+>
+  <div className="flex items-center gap-4">
+    <div className="w-14 h-14 rounded-2xl flex items-center justify-center flex-shrink-0 bg-gray-700">
+      <ShieldCheck size={28} color="white" weight="fill" />
+    </div>
+    <div className="flex-1">
+      <p className="font-extrabold text-gray-800 text-base">Tim Pengawas ASK</p>
+      <p className="text-xs text-gray-400 mt-0.5 leading-relaxed">
+        Login khusus untuk Dishub, Polda, Komdigi, YLKI, dan DOKB
+      </p>
+    </div>
+    <ArrowRight size={18} color="#4b5563" weight="bold" />
+  </div>
+</button>
+
         {/* Menu lainnya (coming soon) */}
         <div className="mt-6">
           <p className="text-xs font-bold text-gray-400 text-center mb-3">Menu Pengawasan (Segera Hadir)</p>
