@@ -844,6 +844,20 @@ function MasyarakatForm({ onBack }: { onBack: () => void }) {
           {loading ? '⏳ Mengirim...' : <><PaperPlaneTilt size={20} weight="fill" /> KIRIM LAPORAN</>}
         </button>
 
+{/* --- TAMBAHAN TOMBOL PANDUAN DI SINI --- */}
+<div className="mt-4 flex justify-center">
+  <Link href="/panduan"
+    className="text-xs font-bold text-blue-600 hover:underline flex items-center gap-1"
+  >
+    <Question size={14} weight="fill" /> Butuh Bantuan? Lihat Panduan
+  </Link>
+</div>
+{/* --- SELESAI TAMBAHAN --- */}
+
+<p className="text-center text-[10px] text-gray-300 pb-4">
+  DOKB — Perkumpulan Driver Online Kalimantan Selatan Bersatu
+</p>
+        
         <p className="text-center text-[10px] text-gray-300 pb-4">
           DOKB — Perkumpulan Driver Online Kalimantan Selatan Bersatu
         </p>
