@@ -88,7 +88,7 @@ export default function PanduanPage() {
           {/* Tempat Gambar */}
           <div className="rounded-xl overflow-hidden border-2 border-green-500 relative">
             <div className="aspect-[9/16] bg-gray-200 flex items-center justify-center text-gray-400 text-sm p-4 text-center">
-              [ 📸 Tempat SS Contoh Aplikasi, Pak Jani ]
+              [ 📸 Tempat SS Contoh Aplikasi ]
             </div>
             <div className="absolute top-2 right-2 bg-green-500 text-white text-[10px] font-bold px-2 py-0.5 rounded-full">✓ Benar</div>
           </div>
