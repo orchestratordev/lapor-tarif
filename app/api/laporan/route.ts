@@ -5,7 +5,7 @@ import { analisisLaporan } from '@/lib/ai'
 
 const TIM_PENGAWAS = [
   '6281351238108', // Pak Jani
-  '6281xxxxxxxxx', // Tim Pengawas 1
+  '6289691800108', // Tim Pengawas 1
 ]
 
 export async function POST(req: NextRequest) {
