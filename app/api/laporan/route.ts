@@ -8,7 +8,7 @@ const TIM_PENGAWAS = [
   '6289691800108', // Tim Pengawas 1
 ]
 // ─── Helper untuk mengubah UTC ke WITA ──────────────────────────────────────
-const formatWaktuWITA = (isoString) => {
+const formatWaktuWITA = (isoString: string) => {
   if (!isoString) return '-';
   const date = new Date(isoString);
   return new Intl.DateTimeFormat('id-ID', {
