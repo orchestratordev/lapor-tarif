@@ -20,7 +20,7 @@ const formatWaktuWITA = (isoString: string) => {
     hour: '2-digit',
     minute: '2-digit',
     hour12: false
-  }).format(date);
+  }).format(date); + ' WITA';
 };
 export async function POST(req: NextRequest) {
   try {
