@@ -7,7 +7,21 @@ const TIM_PENGAWAS = [
   '6281351238108', // Pak Jani
   '6289691800108', // Tim Pengawas 1
 ]
-
+// ─── Helper untuk mengubah UTC ke WITA ──────────────────────────────────────
+const formatWaktuWITA = (isoString) => {
+  if (!isoString) return '-';
+  const date = new Date(isoString);
+  return new Intl.DateTimeFormat('id-ID', {
+    timeZone: 'Asia/Makassar',
+    weekday: 'long',
+    year: 'numeric',
+    month: 'long',
+    day: 'numeric',
+    hour: '2-digit',
+    minute: '2-digit',
+    hour12: false
+  }).format(date);
+};
 export async function POST(req: NextRequest) {
   try {
     const body = await req.json()
@@ -59,7 +73,7 @@ try {
 ✅ Tarif seharusnya: Rp ${body.tarif_seharusnya.toLocaleString('id-ID')}
 ❌ Selisih: Rp ${selisih.toLocaleString('id-ID')}
 📍 Lokasi: ${body.lokasi}
-🕐 Waktu: ${body.waktu_kejadian}
+🕐 Waktu: ${formatWaktuWITA(body.waktu_kejadian)}
 
 🤖 *Analisis AI:*
 ${analisis}
