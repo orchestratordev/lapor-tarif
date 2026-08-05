@@ -49,7 +49,20 @@ const STATUS_STYLE: Record<string, { bg: string; text: string; label: string }> 
 
 const fmtRp = (n: number) => 'Rp ' + (n || 0).toLocaleString('id-ID')
 const fmtDate = (s: string) => new Date(s).toLocaleDateString('id-ID', { day: 'numeric', month: 'long', year: 'numeric' })
-const fmtDateTime = (s: string) => new Date(s).toLocaleString('id-ID')
+const fmtDateTime = (s: string) => {
+  if (!s) return '-';
+  const date = new Date(s);
+  return new Intl.DateTimeFormat('id-ID', {
+    timeZone: 'Asia/Makassar', // Kunci utama: paksa zona waktu WITA
+    year: 'numeric',
+    month: 'numeric',
+    day: 'numeric',
+    hour: '2-digit',
+    minute: '2-digit',
+    second: '2-digit',
+    hour12: false // Menggunakan format 24 jam
+  }).format(date);
+};
 
 export default function Dashboard() {
   const [laporan,   setLaporan]   = useState<Laporan[]>([])
