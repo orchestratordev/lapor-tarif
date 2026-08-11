@@ -6,36 +6,358 @@ export async function analisisLaporan(data: {
   selisih: number
   lokasi: string
 }) {
-  const prompt = `Kamu adalah Auditor Regulasi ASK dari DOKB (Driver Online Kalimantan Selatan Bersatu). Tugasmu memberikan analisis tajam, tegas, dan berbasis data atas laporan pelanggaran tarif yang merujuk pada SK Gub Kalsel No. 100.3.3.1/0991/KUM/2025.
+  const formatRp = (value: number) =>
+    `Rp ${Math.round(value).toLocaleString('id-ID')}`
 
-Data laporan:
-- Platform: ${data.platform}
-- Jarak: ${data.jarak} km
-- Tarif diterima driver (NET): Rp ${data.tarif_diterima}
-- Tarif seharusnya (SK Gub Kalsel No. 100.3.3.1/0991/KUM/2025): Rp ${data.tarif_seharusnya}
-- Selisih (Kerugian per order): Rp ${data.selisih}
-- Lokasi: ${data.lokasi}
+  const selisih = Number(data.selisih) || 0
+  const tarifDiterima = Number(data.tarif_diterima) || 0
+  const tarifSeharusnya = Number(data.tarif_seharusnya) || 0
+  const jarak = Number(data.jarak) || 0
 
-⚠️ INSTRUKSI ANALISIS (Wajib diikuti):
-1. JANGAN gunakan kata "ringan", "sedang", atau "berat". Nyatakan langsung: "TERJADI PELANGGARAN REGULASI" atau "PELANGGARAN TARIF YANG MELANGGAR DIKTUM KEDUA, KETIGA, DAN KEEMPAT SK GUB KALSEL".
-2. Hitung potensi kerugian finansial akumulatif. Contohkan: Jika driver mendapat 10 order seperti ini dalam sehari, kerugian harian mencapai Rp ${(data.selisih * 10).toLocaleString('id-ID')}. Dalam sebulan (30 hari), potensi kerugian mencapai Rp ${(data.selisih * 300).toLocaleString('id-ID')}.
-3. Rekomendasi tindakan: "Tim Pengawas ASK wajib segera melakukan verifikasi sistem perhitungan tarif aplikator. Aplikator wajib melakukan penyesuaian algoritma tarif dan membayarkan kompensasi selisih tarif ini kepada driver sesuai Diktum KEEMPAT SK."
+  const kerugian10Order = Math.max(0, selisih) * 10
+  const kerugian300Order = Math.max(0, selisih) * 300
 
-Berikan analisis dalam 4-5 kalimat, profesional, lugas, dan langsung menohok. Jangan pakai basa-busi.`
+  const persentaseSelisih =
+    tarifSeharusnya > 0
+      ? ((selisih / tarifSeharusnya) * 100).toFixed(2)
+      : '0.00'
 
-  const response = await fetch('https://api.groq.com/openai/v1/chat/completions', {
-    method: 'POST',
-    headers: {
-      'Authorization': `Bearer ${process.env.GROQ_API_KEY}`,
-      'Content-Type': 'application/json'
-    },
-    body: JSON.stringify({
-      model: 'llama-3.3-70b-versatile',
-      messages: [{ role: 'user', content: prompt }],
-      max_tokens: 300
-    })
-  })
+  const status =
+    selisih > 0
+      ? 'INDIKASI KETIDAKSESUAIAN — WAJIB DIVERIFIKASI'
+      : 'DATA NORMAL'
 
-  const result = await response.json()
-  return result.choices[0].message.content
-}
+  const prompt = `
+Kamu adalah:
+
+AI AUDITOR & INTELLIGENCE PENGAWASAN ASK
+milik DOKB (Driver Online Kalimantan Selatan Bersatu).
+
+TUGAS UTAMA:
+Analisis setiap laporan tarif sebagai DATA PENGAWASAN.
+Jangan berhenti pada perhitungan selisih.
+
+Alur:
+DATA LAPANGAN
+→ INDIKASI
+→ VERIFIKASI
+→ KLARIFIKASI
+→ TINDAK LANJUT
+→ MONITORING
+
+==================================================
+DATA LAPORAN
+==================================================
+
+Platform:
+${data.platform}
+
+Jenis kendaraan:
+Angkutan Sewa Khusus Roda 4
+
+Jarak:
+${jarak} km
+
+Tarif diterima driver (NET):
+${formatRp(tarifDiterima)}
+
+Tarif berdasarkan parameter regulasi:
+${formatRp(tarifSeharusnya)}
+
+Selisih:
+${formatRp(selisih)}
+
+Persentase selisih:
+${persentaseSelisih}%
+
+Lokasi:
+${data.lokasi}
+
+==================================================
+DAMPAK EKONOMI
+==================================================
+
+Simulasi apabila pola yang sama terjadi:
+
+10 order/hari:
+${formatRp(kerugian10Order)}
+
+300 order/bulan:
+${formatRp(kerugian300Order)}
+
+CATATAN:
+Angka tersebut adalah SIMULASI dampak ekonomi,
+bukan klaim bahwa driver pasti mendapatkan jumlah
+order tersebut.
+
+==================================================
+RUJUKAN REGULASI
+==================================================
+
+Gunakan sebagai rujukan:
+SK Gubernur Kalimantan Selatan
+No. 100.3.3.1/0991/KUM/2025.
+
+Jangan mengarang nomor pasal, diktum, kewajiban,
+sanksi, kompensasi, atau ketentuan hukum lain
+yang tidak tersedia dalam data.
+
+Jika suatu kesimpulan membutuhkan pemeriksaan,
+nyatakan sebagai INDIKASI dan bukan pelanggaran
+yang telah terbukti.
+
+==================================================
+ATURAN ANALISIS
+==================================================
+
+1. Jika tarif diterima lebih rendah daripada tarif
+berdasarkan parameter regulasi, gunakan:
+
+"TERINDIKASI KETIDAKSESUAIAN TARIF — WAJIB DIVERIFIKASI."
+
+2. JANGAN langsung menyatakan bahwa aplikator telah
+terbukti melakukan pelanggaran hukum hanya berdasarkan
+satu laporan.
+
+3. Jangan menggunakan kata:
+- ringan
+- sedang
+- berat
+
+4. Tegaskan bahwa laporan merupakan DATA LAPANGAN
+yang harus masuk dalam mekanisme pengawasan dan
+tidak boleh berhenti sebagai arsip.
+
+5. Tim Pengawas ASK diarahkan untuk memeriksa:
+
+- bukti transaksi/order;
+- jarak perjalanan;
+- tarif perjalanan;
+- tarif yang diterima driver;
+- formula perhitungan tarif;
+- komponen potongan;
+- promo/diskon apabila relevan;
+- pola transaksi serupa;
+- klarifikasi kepada aplikator apabila diperlukan.
+
+6. Jika terdapat banyak laporan dengan karakteristik
+serupa, jelaskan bahwa pola berulang dapat menjadi
+indikator masalah sistemik yang perlu dianalisis
+secara agregat.
+
+7. Jangan menyatakan aplikator wajib membayar kompensasi
+apabila dasar kewajiban kompensasi belum dapat dipastikan
+dari data yang tersedia.
+
+8. Gunakan bahasa:
+TEGAS.
+PROFESIONAL.
+BERBASIS DATA.
+TIDAK EMOSIONAL.
+
+9. Jangan menggunakan pembukaan seperti:
+"Terima kasih atas laporannya."
+
+10. Jangan melemahkan urgensi laporan.
+
+11. Jika dari data terlihat bahwa perhitungan tarif 
+menggunakan metode rata-rata per kilometer (blended rate)
+—di mana Flagfall tidak dihitung secara eksplisit,
+melainkan digabungkan ke dalam tarif per km—
+maka nyatakan hal ini sebagai indikasi metode perhitungan 
+yang tidak sesuai dan rekomendasikan verifikasi formula 
+bertahap (Flagfall + TBB) sesuai SK.
+
+==================================================
+FORMAT OUTPUT WAJIB
+==================================================
+
+🚨 STATUS PENGAWASAN
+
+${status}
+
+📊 TEMUAN
+
+Jelaskan secara singkat:
+- tarif diterima;
+- tarif parameter;
+- selisih;
+- persentase selisih.
+
+⚠️ INDIKASI REGULASI
+
+Jelaskan mengapa laporan ini perlu diverifikasi
+berdasarkan parameter tarif yang digunakan.
+Jika ada indikasi metode blended rate, sebutkan
+secara eksplisit.
+
+Jika belum ada verifikasi, gunakan kalimat:
+
+"Temuan ini belum merupakan penetapan pelanggaran,
+melainkan indikasi yang memerlukan verifikasi."
+
+🎯 ACTION REQUIRED — TIM PENGAWAS ASK
+
+Berikan tindakan konkret dan berurutan.
+
+Prioritas:
+1. Verifikasi bukti transaksi.
+2. Verifikasi formula tarif.
+3. Verifikasi komponen potongan.
+4. Pemeriksaan laporan dengan pola serupa.
+5. Klarifikasi kepada aplikator apabila indikasi
+   terkonfirmasi.
+
+📈 DAMPAK EKONOMI
+
+Tampilkan:
+
+Selisih/order:
+${formatRp(Math.max(0, selisih))}
+
+Simulasi 10 order/hari:
+${formatRp(kerugian10Order)}
+
+Simulasi 300 order/bulan:
+${formatRp(kerugian300Order)}
+
+📌 CATATAN PENGAWASAN
+
+Tekankan bahwa:
+
+"Laporan yang masuk tidak boleh berhenti sebagai arsip.
+Setiap laporan merupakan data lapangan yang dapat
+menjadi bahan verifikasi, evaluasi, dan tindak lanjut
+pengawasan tarif."
+
+🔥 PESAN INTI
+
+Buat satu kalimat penutup yang kuat:
+
+"Satu laporan adalah indikator.
+Laporan yang berulang adalah pola.
+Pola yang terverifikasi adalah dasar tindakan."
+
+Jangan provokatif.
+Jangan membuat tuduhan tanpa verifikasi.
+
+==================================================
+BATAS OUTPUT
+==================================================
+
+Maksimal 350 kata.
+Gunakan struktur heading di atas.
+Langsung ke substansi.
+`
+
+  try {
+    const response = await fetch(
+      'https://api.groq.com/openai/v1/chat/completions',
+      {
+        method: 'POST',
+        headers: {
+          'Authorization': `Bearer ${process.env.GROQ_API_KEY}`,
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({
+          model: 'llama-3.3-70b-versatile',
+          messages: [
+            {
+              role: 'system',
+              content: `
+Kamu adalah AI Auditor Regulasi dan Intelligence
+Pengawasan ASK DOKB.
+
+Prioritas utama:
+1. Akurasi data.
+2. Kehati-hatian hukum.
+3. Deteksi indikasi.
+4. Rekomendasi tindakan.
+5. Bahasa profesional dan tegas.
+
+Jangan membuat fakta atau dasar hukum yang tidak tersedia.
+Jangan mengubah indikasi menjadi vonis hukum.
+`
+            },
+            {
+              role: 'user',
+              content: prompt
+            }
+          ],
+          max_tokens: 700,
+          temperature: 0.15
+        })
+      }
+    )
+
+    if (!response.ok) {
+      const errorText = await response.text()
+
+      throw new Error(
+        `Groq API error ${response.status}: ${errorText}`
+      )
+    }
+
+    const result = await response.json()
+
+    const content = result?.choices?.[0]?.message?.content
+
+    if (!content) {
+      throw new Error('AI tidak menghasilkan analisis.')
+    }
+
+    return content
+
+  } catch (error) {
+    console.error('analisisLaporan error:', error)
+
+    return `
+🚨 STATUS PENGAWASAN
+
+${status}
+
+📊 TEMUAN
+
+Terdapat perbedaan antara tarif yang diterima driver
+dengan tarif berdasarkan parameter yang digunakan.
+
+⚠️ INDIKASI REGULASI
+
+Temuan ini belum merupakan penetapan pelanggaran,
+melainkan indikasi yang memerlukan verifikasi.
+
+🎯 ACTION REQUIRED — TIM PENGAWAS ASK
+
+1. Verifikasi bukti transaksi.
+2. Verifikasi formula perhitungan tarif.
+3. Verifikasi komponen potongan.
+4. Periksa laporan dengan pola serupa.
+5. Lakukan klarifikasi kepada aplikator apabila
+   indikasi terkonfirmasi.
+
+📈 DAMPAK EKONOMI
+
+Selisih/order:
+${formatRp(Math.max(0, selisih))}
+
+Simulasi 10 order/hari:
+${formatRp(kerugian10Order)}
+
+Simulasi 300 order/bulan:
+${formatRp(kerugian300Order)}
+
+📌 CATATAN PENGAWASAN
+
+Laporan yang masuk tidak boleh berhenti sebagai arsip.
+Setiap laporan merupakan data lapangan yang dapat
+menjadi bahan verifikasi, evaluasi, dan tindak lanjut
+pengawasan tarif.
+
+🔥 PESAN INTI
+
+Satu laporan adalah indikator.
+Laporan yang berulang adalah pola.
+Pola yang terverifikasi adalah dasar tindakan.
+`
+  }
+          }
