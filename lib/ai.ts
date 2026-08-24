@@ -27,6 +27,9 @@ export async function analisisLaporan(data: {
       ? 'INDIKASI KETIDAKSESUAIAN — WAJIB DIVERIFIKASI'
       : 'DATA NORMAL'
 
+  // Logika khusus: apakah ada pelanggaran? (Untuk menentukan bagian output mana yang ditampilkan)
+  const isPelanggaran = selisih > 0
+
   const prompt = `
 Kamu adalah:
 
@@ -168,6 +171,15 @@ maka nyatakan hal ini sebagai indikasi metode perhitungan
 yang tidak sesuai dan rekomendasikan verifikasi formula 
 bertahap (Flagfall + TBB) sesuai SK.
 
+12. PENTING: Jika SELISIH bernilai 0 (nol) atau TARIF
+DITERIMA sama dengan TARIF SEHARUSNYA, maka:
+- JANGAN menampilkan bagian TEMUAN.
+- JANGAN menampilkan bagian INDIKASI REGULASI.
+- JANGAN menampilkan bagian ACTION REQUIRED.
+- Cukup tampilkan STATUS PENGAWASAN DATA NORMAL, dan
+  satu kalimat penutup: "Tarif telah sesuai dengan
+  ketentuan SK Gub Kalsel. Tidak ada indikasi pelanggaran."
+
 ==================================================
 FORMAT OUTPUT WAJIB
 ==================================================
@@ -176,6 +188,9 @@ FORMAT OUTPUT WAJIB
 
 ${status}
 
+${
+  isPelanggaran
+    ? `
 📊 TEMUAN
 
 Jelaskan secara singkat:
@@ -240,6 +255,14 @@ Pola yang terverifikasi adalah dasar tindakan."
 
 Jangan provokatif.
 Jangan membuat tuduhan tanpa verifikasi.
+`
+    : `
+✅ KESIMPULAN
+
+"Tarif telah sesuai dengan ketentuan SK Gub Kalsel.
+Tidak ada indikasi pelanggaran."
+`
+}
 
 ==================================================
 BATAS OUTPUT
@@ -311,7 +334,9 @@ Jangan mengubah indikasi menjadi vonis hukum.
   } catch (error) {
     console.error('analisisLaporan error:', error)
 
-    return `
+    // Fallback jika API error
+    if (isPelanggaran) {
+      return `
 🚨 STATUS PENGAWASAN
 
 ${status}
@@ -359,5 +384,17 @@ Satu laporan adalah indikator.
 Laporan yang berulang adalah pola.
 Pola yang terverifikasi adalah dasar tindakan.
 `
+    } else {
+      return `
+🚨 STATUS PENGAWASAN
+
+DATA NORMAL
+
+✅ KESIMPULAN
+
+"Tarif telah sesuai dengan ketentuan SK Gub Kalsel.
+Tidak ada indikasi pelanggaran."
+`
+    }
   }
-          }
+}
