@@ -30,13 +30,14 @@ export async function POST(req: NextRequest) {
 let analisis = 'Analisis AI tidak tersedia'
 try {
   analisis = await analisisLaporan({
-    platform: body.platform,
-    jarak: body.jarak,
-    tarif_diterima: body.tarif_diterima,
-    tarif_seharusnya: body.tarif_seharusnya,
-    selisih: body.tarif_seharusnya - body.tarif_diterima,
-    lokasi: body.lokasi
-  })
+  platform: body.platform,
+  jarak: body.jarak,
+  tarif_diterima: body.tarif_diterima,
+  tarif_seharusnya: body.tarif_seharusnya,
+  selisih: body.tarif_seharusnya - body.tarif_diterima,
+  lokasi: body.lokasi,
+  catatan: body.catatan || '' // <--- TAMBAHKAN BARIS INI
+})
 } catch (aiError) {
   console.error('AI Error:', aiError)
 }
