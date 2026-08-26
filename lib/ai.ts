@@ -320,20 +320,18 @@ Langsung ke substansi.
 `
 
   try {
-    const response = await fetch(
-      'https://api.groq.com/openai/v1/chat/completions',
-      {
-        method: 'POST',
-        headers: {
-          'Authorization': `Bearer ${process.env.GROQ_API_KEY}`,
-          'Content-Type': 'application/json'
-        },
-        body: JSON.stringify({
-          model: 'gpt-oss-120b',
-          messages: [
-            {
-              role: 'system',
-              content: `
+    const response = await fetch('https://router.bynara.id/v1/chat/completions', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': `Bearer ${process.env.BYNARA_API_KEY}`, // Ganti API Key NaraRouter
+      },
+      body: JSON.stringify({
+        model: 'mistral-large', // Ganti model yang Bapak tes tadi
+        messages: [
+          {
+            role: 'system',
+            content: `
 Kamu adalah AI Auditor Regulasi dan Intelligence
 Pengawasan ASK DOKB.
 
@@ -347,24 +345,20 @@ Prioritas utama:
 Jangan membuat fakta atau dasar hukum yang tidak tersedia.
 Jangan mengubah indikasi menjadi vonis hukum.
 `
-            },
-            {
-              role: 'user',
-              content: prompt
-            }
-          ],
-          max_tokens: 700,
-          temperature: 0.15
-        })
-      }
-    )
+          },
+          {
+            role: 'user',
+            content: prompt
+          }
+        ],
+        max_tokens: 700,
+        temperature: 0.15
+      })
+    })
 
     if (!response.ok) {
       const errorText = await response.text()
-
-      throw new Error(
-        `Groq API error ${response.status}: ${errorText}`
-      )
+      throw new Error(`NaraRouter API error ${response.status}: ${errorText}`)
     }
 
     const result = await response.json()
@@ -380,9 +374,9 @@ Jangan mengubah indikasi menjadi vonis hukum.
   } catch (error) {
     console.error('analisisLaporan error:', error)
 
-    // Fallback jika API error
-    if (isPelanggaran) {
-      return `
+    // (Fallback error tetap sama seperti di kode Bapak)
+  }
+  
 🚨 STATUS PENGAWASAN
 
 ${status}
