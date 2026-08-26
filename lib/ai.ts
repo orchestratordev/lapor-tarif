@@ -5,6 +5,7 @@ export async function analisisLaporan(data: {
   tarif_seharusnya: number
   selisih: number
   lokasi: string
+  catatan?: string // <--- TAMBAHAN BARU
 }) {
   const formatRp = (value: number) =>
     `Rp ${Math.round(value).toLocaleString('id-ID')}`
@@ -13,6 +14,7 @@ export async function analisisLaporan(data: {
   const tarifDiterima = Number(data.tarif_diterima) || 0
   const tarifSeharusnya = Number(data.tarif_seharusnya) || 0
   const jarak = Number(data.jarak) || 0
+  const catatan = data.catatan || '' // <--- AMBIL NILAI CATATAN
 
   const kerugian10Order = Math.max(0, selisih) * 10
   const kerugian300Order = Math.max(0, selisih) * 300
@@ -27,7 +29,6 @@ export async function analisisLaporan(data: {
       ? 'INDIKASI KETIDAKSESUAIAN — WAJIB DIVERIFIKASI'
       : 'DATA NORMAL'
 
-  // Logika khusus: apakah ada pelanggaran? (Untuk menentukan bagian output mana yang ditampilkan)
   const isPelanggaran = selisih > 0
 
   const prompt = `
@@ -75,6 +76,18 @@ ${persentaseSelisih}%
 
 Lokasi:
 ${data.lokasi}
+
+${
+  catatan
+    ? `
+KETERANGAN DRIVER:
+"${catatan}"
+`
+    : `
+KETERANGAN DRIVER:
+(Tidak diisi)
+`
+}
 
 ==================================================
 DAMPAK EKONOMI
@@ -180,6 +193,18 @@ DITERIMA sama dengan TARIF SEHARUSNYA, maka:
   satu kalimat penutup: "Tarif telah sesuai dengan
   ketentuan SK Gub Kalsel. Tidak ada indikasi pelanggaran."
 
+13. PENTING (ANALISIS KETERANGAN):
+- Jika kolom KETERANGAN DRIVER diisi, analisis keluhan
+  atau informasi tambahan tersebut secara mendalam.
+- Hubungkan keterangan dengan data tarif (misalnya:
+  "Driver menyebut ada multi-stop, konsisten dengan
+  selisih tarif yang terjadi").
+- Jika keterangan menunjukkan indikasi pelanggaran
+  lain (misalnya: dipaksa masuk gang, idle time lama),
+  masukkan ke dalam rekomendasi verifikasi.
+- Jangan mengabaikan keterangan. Anggap sebagai
+  "konteks lapangan" yang penting.
+
 ==================================================
 FORMAT OUTPUT WAJIB
 ==================================================
@@ -223,6 +248,17 @@ Prioritas:
 5. Klarifikasi kepada aplikator apabila indikasi
    terkonfirmasi.
 
+${
+  catatan
+    ? `
+📝 CATATAN DRIVER (ANALISIS):
+
+Analisis dan kaitkan keterangan driver dengan data
+tarif. Sebutkan poin penting dari keterangan tersebut.
+`
+    : ''
+}
+
 📈 DAMPAK EKONOMI
 
 Tampilkan:
@@ -261,6 +297,17 @@ Jangan membuat tuduhan tanpa verifikasi.
 
 "Tarif telah sesuai dengan ketentuan SK Gub Kalsel.
 Tidak ada indikasi pelanggaran."
+${
+  catatan
+    ? `
+📝 CATATAN DRIVER (ANALISIS):
+
+Meskipun tarif sesuai, tetap analisis keterangan driver
+jika ada keluhan lain. Jika tidak ada, cukup tulis:
+"Tidak ada keluhan tambahan dari driver."
+`
+    : ''
+}
 `
 }
 
@@ -397,4 +444,4 @@ Tidak ada indikasi pelanggaran."
 `
     }
   }
-}
+  }
