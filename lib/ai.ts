@@ -218,6 +218,17 @@ DITERIMA sama dengan TARIF SEHARUSNYA, maka:
 - Tampilkan SEMUA teks sebagai teks polos.
 - Gunakan huruf kapital atau struktur baris untuk penekanan.
 
+17. PENTING (LARANGAN MENGARANG):
+- JANGAN menyebut "Pasal", "Diktum", atau nomor peraturan
+  apa pun kecuali yang benar-benar tertulis dalam data
+  laporan (yang sudah berisi rujukan SK Gub Kalsel No.
+  100.3.3.1/0991/KUM/2025).
+- SK Gubernur Kalsel menggunakan istilah "Diktum", bukan
+  "Pasal". Jika tidak yakin, cukup tulis "ketentuan SK
+  Gubernur" tanpa menyebut nomor.
+- HALUSINASI HUKUM adalah kesalahan fatal. Berfokuslah
+  pada analisis selisih tarif dan laporan driver.
+  
 ==================================================
 FORMAT OUTPUT WAJIB
 ==================================================
