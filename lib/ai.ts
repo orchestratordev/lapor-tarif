@@ -248,16 +248,15 @@ Prioritas:
 5. Klarifikasi kepada aplikator apabila indikasi
    terkonfirmasi.
 
+📝 CATATAN DRIVER
+
 ${
   catatan
-    ? `
-📝 CATATAN DRIVER (ANALISIS):
-
-Analisis dan kaitkan keterangan driver dengan data
-tarif. Sebutkan poin penting dari keterangan tersebut.
-`
-    : ''
+    ? `"${catatan}"`
+    : "(Tidak ada keterangan tambahan dari driver)"
 }
+
+Analisis: [AI WAJIB menganalisis poin ini secara singkat]
 
 📈 DAMPAK EKONOMI
 
