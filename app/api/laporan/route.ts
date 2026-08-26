@@ -74,6 +74,7 @@ try {
 ✅ Tarif seharusnya: Rp ${body.tarif_seharusnya.toLocaleString('id-ID')}
 ❌ Selisih: Rp ${selisih.toLocaleString('id-ID')}
 📍 Lokasi: ${body.lokasi}
+📝 Keterangan: ${body.catatan || '-'}
 🕐 Waktu: ${formatWaktuWITA(body.waktu_kejadian)}
 
 🤖 *Analisis AI:*
