@@ -324,10 +324,10 @@ Langsung ke substansi.
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
-        'Authorization': `Bearer ${process.env.BYNARA_API_KEY}`, // Ganti API Key NaraRouter
+        'Authorization': `Bearer ${process.env.BYNARA_API_KEY}`, // API Key NaraRouter
       },
       body: JSON.stringify({
-        model: 'mistral-large', // Ganti model yang Bapak tes tadi
+        model: 'mistral-large', // Model dari NaraRouter
         messages: [
           {
             role: 'system',
@@ -374,24 +374,24 @@ Jangan mengubah indikasi menjadi vonis hukum.
   } catch (error) {
     console.error('analisisLaporan error:', error)
 
-    // (Fallback error tetap sama seperti di kode Bapak)
-  }
-  
-🚨 STATUS PENGAWASAN
+    // Fallback jika API error
+    if (isPelanggaran) {
+      return `
+STATUS PENGAWASAN
 
 ${status}
 
-📊 TEMUAN
+TEMUAN
 
 Terdapat perbedaan antara tarif yang diterima driver
 dengan tarif berdasarkan parameter yang digunakan.
 
-⚠️ INDIKASI REGULASI
+INDIKASI REGULASI
 
 Temuan ini belum merupakan penetapan pelanggaran,
 melainkan indikasi yang memerlukan verifikasi.
 
-🎯 ACTION REQUIRED — TIM PENGAWAS ASK
+ACTION REQUIRED -- TIM PENGAWAS ASK
 
 1. Verifikasi bukti transaksi.
 2. Verifikasi formula perhitungan tarif.
@@ -400,7 +400,7 @@ melainkan indikasi yang memerlukan verifikasi.
 5. Lakukan klarifikasi kepada aplikator apabila
    indikasi terkonfirmasi.
 
-📈 DAMPAK EKONOMI
+DAMPAK EKONOMI
 
 Selisih/order:
 ${formatRp(Math.max(0, selisih))}
@@ -411,14 +411,14 @@ ${formatRp(kerugian10Order)}
 Simulasi 300 order/bulan:
 ${formatRp(kerugian300Order)}
 
-📌 CATATAN PENGAWASAN
+CATATAN PENGAWASAN
 
 Laporan yang masuk tidak boleh berhenti sebagai arsip.
 Setiap laporan merupakan data lapangan yang dapat
 menjadi bahan verifikasi, evaluasi, dan tindak lanjut
 pengawasan tarif.
 
-🔥 PESAN INTI
+PESAN INTI
 
 Satu laporan adalah indikator.
 Laporan yang berulang adalah pola.
@@ -426,15 +426,15 @@ Pola yang terverifikasi adalah dasar tindakan.
 `
     } else {
       return `
-🚨 STATUS PENGAWASAN
+STATUS PENGAWASAN
 
 DATA NORMAL
 
-✅ KESIMPULAN
+KESIMPULAN
 
 "Tarif telah sesuai dengan ketentuan SK Gub Kalsel.
 Tidak ada indikasi pelanggaran."
 `
     }
   }
-  }
+}  
