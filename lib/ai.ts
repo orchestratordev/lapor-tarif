@@ -391,7 +391,7 @@ Langsung ke substansi.
 
   try {
     const response = await ai.models.generateContent({
-      model: 'gemini-2.5-flash',
+      model: 'gemini-3.6-flash',
       contents: prompt,
       config: {
         systemInstruction,
@@ -408,8 +408,10 @@ Langsung ke substansi.
 
     return content
 
-  } catch (error) {
-    console.error('analisisLaporan error:', error)
+  } catch (error: any) {
+    console.error('analisisLaporan error message:', error?.message)
+    console.error('analisisLaporan error status:', error?.status || error?.code)
+    console.error('analisisLaporan error full:', JSON.stringify(error, Object.getOwnPropertyNames(error)))
 
     // Fallback jika API error — ini SENGAJA fixed text, karena dipakai
     // hanya saat AI gagal total, bukan hasil analisis normal
