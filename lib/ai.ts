@@ -1,3 +1,7 @@
+import { GoogleGenAI } from '@google/genai'
+
+const ai = new GoogleGenAI({ apiKey: process.env.GEMINI_API_KEY })
+
 export async function analisisLaporan(data: {
   platform: string
   jarak: number
@@ -30,6 +34,23 @@ export async function analisisLaporan(data: {
       : 'DATA NORMAL'
 
   const isPelanggaran = selisih > 0
+
+  const systemInstruction = `
+Kamu adalah AI Auditor Regulasi dan Intelligence
+Pengawasan ASK DOKB.
+
+Prioritas utama:
+1. Akurasi data.
+2. Kehati-hatian hukum.
+3. Deteksi indikasi.
+4. Rekomendasi tindakan.
+5. Bahasa profesional dan tegas.
+6. Analisis ORIGINAL per laporan — hindari kalimat baku
+   yang bisa dipakai ulang identik di laporan lain.
+
+Jangan membuat fakta atau dasar hukum yang tidak tersedia.
+Jangan mengubah indikasi menjadi vonis hukum.
+`
 
   const prompt = `
 Kamu adalah:
@@ -369,52 +390,17 @@ Langsung ke substansi.
 `
 
   try {
-    const response = await fetch('https://router.bynara.id/v1/chat/completions', {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-        'Authorization': `Bearer ${process.env.BYNARA_API_KEY}`, // API Key NaraRouter
+    const response = await ai.models.generateContent({
+      model: 'gemini-2.5-flash',
+      contents: prompt,
+      config: {
+        systemInstruction,
+        temperature: 0.5,
+        maxOutputTokens: 700,
       },
-      body: JSON.stringify({
-        model: 'mistral-large', // Model dari NaraRouter
-        messages: [
-          {
-            role: 'system',
-            content: `
-Kamu adalah AI Auditor Regulasi dan Intelligence
-Pengawasan ASK DOKB.
-
-Prioritas utama:
-1. Akurasi data.
-2. Kehati-hatian hukum.
-3. Deteksi indikasi.
-4. Rekomendasi tindakan.
-5. Bahasa profesional dan tegas.
-6. Analisis ORIGINAL per laporan — hindari kalimat baku
-   yang bisa dipakai ulang identik di laporan lain.
-
-Jangan membuat fakta atau dasar hukum yang tidak tersedia.
-Jangan mengubah indikasi menjadi vonis hukum.
-`
-          },
-          {
-            role: 'user',
-            content: prompt
-          }
-        ],
-        max_tokens: 700,
-        temperature: 0.5
-      })
     })
 
-    if (!response.ok) {
-      const errorText = await response.text()
-      throw new Error(`NaraRouter API error ${response.status}: ${errorText}`)
-    }
-
-    const result = await response.json()
-
-    const content = result?.choices?.[0]?.message?.content
+    const content = response.text
 
     if (!content) {
       throw new Error('AI tidak menghasilkan analisis.')
