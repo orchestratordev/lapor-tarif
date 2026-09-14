@@ -5,7 +5,7 @@ export async function analisisLaporan(data: {
   tarif_seharusnya: number
   selisih: number
   lokasi: string
-  catatan?: string // <--- TAMBAHAN BARU
+  catatan?: string
 }) {
   const formatRp = (value: number) =>
     `Rp ${Math.round(value).toLocaleString('id-ID')}`
@@ -14,7 +14,7 @@ export async function analisisLaporan(data: {
   const tarifDiterima = Number(data.tarif_diterima) || 0
   const tarifSeharusnya = Number(data.tarif_seharusnya) || 0
   const jarak = Number(data.jarak) || 0
-  const catatan = data.catatan || '' // <--- AMBIL NILAI CATATAN
+  const catatan = data.catatan || ''
 
   const kerugian10Order = Math.max(0, selisih) * 10
   const kerugian300Order = Math.max(0, selisih) * 300
@@ -40,6 +40,9 @@ milik DOKB (Driver Online Kalimantan Selatan Bersatu).
 TUGAS UTAMA:
 Analisis setiap laporan tarif sebagai DATA PENGAWASAN.
 Jangan berhenti pada perhitungan selisih.
+Setiap laporan itu unik — tulis analisis ORIGINAL untuk
+laporan ini secara spesifik, JANGAN gunakan kalimat baku
+yang bisa dipakai ulang persis sama di laporan lain.
 
 Alur:
 DATA LAPANGAN
@@ -127,7 +130,7 @@ ATURAN ANALISIS
 ==================================================
 
 1. Jika tarif diterima lebih rendah daripada tarif
-berdasarkan parameter regulasi, gunakan:
+berdasarkan parameter regulasi, gunakan status:
 "TERINDIKASI KETIDAKSESUAIAN TARIF -- WAJIB DIVERIFIKASI."
 
 2. JANGAN langsung menyatakan bahwa aplikator telah
@@ -139,11 +142,16 @@ satu laporan.
 - sedang
 - berat
 
-4. Tegaskan bahwa laporan merupakan DATA LAPANGAN
-yang harus masuk dalam mekanisme pengawasan dan
-tidak boleh berhenti sebagai arsip.
+4. Tegaskan (dengan kalimatmu sendiri, bukan hafalan)
+bahwa laporan merupakan DATA LAPANGAN yang harus masuk
+dalam mekanisme pengawasan dan tidak boleh berhenti
+sebagai arsip.
 
-5. Tim Pengawas ASK diarahkan untuk memeriksa:
+5. Tim Pengawas ASK perlu memeriksa hal-hal berikut —
+gunakan sebagai DASAR PERTIMBANGAN, lalu susun sendiri
+urutan prioritas paling relevan untuk KASUS INI
+(pertimbangkan platform, besaran persentase selisih,
+dan isi keterangan driver kalau ada):
 
 - bukti transaksi/order;
 - jarak perjalanan;
@@ -155,10 +163,15 @@ tidak boleh berhenti sebagai arsip.
 - pola transaksi serupa;
 - klarifikasi kepada aplikator apabila diperlukan.
 
-6. Jika terdapat banyak laporan dengan karakteristik
-serupa, jelaskan bahwa pola berulang dapat menjadi
-indikator masalah sistemik yang perlu dianalisis
-secara agregat.
+Jangan sekadar menyalin daftar di atas — tulis ulang
+sebagai rekomendasi tindakan yang mengalir dan terasa
+disusun khusus untuk laporan ini.
+
+6. Jika dari data terlihat pola yang berpotensi berulang
+(misal persentase selisih besar, atau keterangan driver
+menyebut kejadian yang sering terjadi), jelaskan dengan
+kalimatmu sendiri bahwa pola berulang bisa jadi indikator
+masalah sistemik yang perlu dianalisis agregat.
 
 7. Jangan menyatakan aplikator wajib membayar kompensasi
 apabila dasar kewajiban kompensasi belum dapat dipastikan
@@ -169,6 +182,9 @@ TEGAS.
 PROFESIONAL.
 BERBASIS DATA.
 TIDAK EMOSIONAL.
+Variasikan pilihan kata & struktur kalimat antar laporan —
+jangan sampai dua laporan berbeda punya bunyi paragraf
+yang nyaris identik.
 
 9. Jangan menggunakan pembukaan seperti:
 "Terima kasih atas laporannya."
@@ -189,12 +205,15 @@ DITERIMA sama dengan TARIF SEHARUSNYA, maka:
 - JANGAN menampilkan bagian INDIKASI REGULASI.
 - JANGAN menampilkan bagian ACTION REQUIRED.
 - Cukup tampilkan STATUS PENGAWASAN DATA NORMAL, dan
-  satu kalimat penutup: "Tarif telah sesuai dengan
-  ketentuan SK Gub Kalsel. Tidak ada indikasi pelanggaran."
+  satu kalimat penutup dengan kalimatmu sendiri yang
+  intinya: tarif telah sesuai ketentuan SK Gub Kalsel,
+  tidak ada indikasi pelanggaran.
 
 13. PENTING (ANALISIS KETERANGAN):
 - Jika kolom KETERANGAN DRIVER diisi, analisis keluhan
-  atau informasi tambahan tersebut secara mendalam.
+  atau informasi tambahan tersebut secara mendalam dan
+  spesifik — sebut ulang inti keterangannya dengan
+  kalimatmu sendiri, jangan cuma menempel generik.
 - Hubungkan keterangan dengan data tarif.
 - Jangan mengabaikan keterangan. Anggap sebagai
   "konteks lapangan" yang penting.
@@ -228,7 +247,19 @@ DITERIMA sama dengan TARIF SEHARUSNYA, maka:
   Gubernur" tanpa menyebut nomor.
 - HALUSINASI HUKUM adalah kesalahan fatal. Berfokuslah
   pada analisis selisih tarif dan laporan driver.
-  
+
+18. PENTING (ANTI-TEMPLATE):
+- Setiap kalimat yang kamu tulis di bagian TEMUAN,
+  INDIKASI REGULASI, ACTION REQUIRED, CATATAN PENGAWASAN,
+  dan PESAN INTI HARUS kamu susun sendiri berdasarkan data
+  laporan ini — bukan kalimat hafalan yang bisa dipakai
+  ulang tanpa perubahan di laporan lain.
+- Sebagai uji sederhana: jika kalimat yang kamu tulis
+  akan terbaca 100% sama persis walau platform, lokasi,
+  jarak, atau keterangan drivernya diganti, berarti
+  kalimat itu terlalu generik — tulis ulang supaya
+  benar-benar mengacu ke detail laporan ini.
+
 ==================================================
 FORMAT OUTPUT WAJIB
 ==================================================
@@ -242,35 +273,28 @@ ${
     ? `
 📊 TEMUAN
 
-Jelaskan secara singkat:
-- tarif diterima;
-- tarif parameter;
-- selisih;
-- persentase selisih.
+Jelaskan dengan kalimatmu sendiri (2-4 kalimat):
+- tarif diterima, tarif parameter, selisih, dan
+  persentase selisih untuk KASUS INI;
+- kaitkan dengan platform (${data.platform}) dan
+  lokasi (${data.lokasi}) secara eksplisit.
 
 ⚠️ INDIKASI REGULASI
 
-Jelaskan mengapa laporan ini perlu diverifikasi
-berdasarkan parameter tarif yang digunakan.
-Jika ada indikasi metode blended rate, sebutkan
-secara eksplisit.
-
-Jika belum ada verifikasi, gunakan kalimat:
-
-"Temuan ini belum merupakan penetapan pelanggaran,
-melainkan indikasi yang memerlukan verifikasi."
+Jelaskan dengan kalimatmu sendiri mengapa laporan ini
+perlu diverifikasi, berdasarkan parameter tarif yang
+digunakan. Jika ada indikasi metode blended rate,
+sebutkan secara eksplisit. Tegaskan bahwa ini baru
+indikasi, bukan penetapan pelanggaran — tapi susun
+kalimatnya sendiri, jangan menyalin frasa baku.
 
 🎯 ACTION REQUIRED — TIM PENGAWAS ASK
 
-Berikan tindakan konkret dan berurutan.
-
-Prioritas:
-1. Verifikasi bukti transaksi.
-2. Verifikasi formula tarif.
-3. Verifikasi komponen potongan.
-4. Pemeriksaan laporan dengan pola serupa.
-5. Klarifikasi kepada aplikator apabila indikasi
-   terkonfirmasi.
+Susun tindakan konkret dan berurutan untuk KASUS INI,
+berdasarkan daftar dasar pertimbangan di Aturan Analisis
+poin 5. Prioritaskan yang paling relevan dengan data
+laporan ini (misal: kalau ada keterangan driver spesifik,
+sebut itu di urutan atas).
 
 📝 CATATAN DRIVER
 
@@ -280,7 +304,8 @@ ${
     : "(Tidak ada keterangan tambahan dari driver)"
 }
 
-Analisis: [AI WAJIB menganalisis poin ini secara singkat]
+Analisis: [Kaitkan keterangan ini secara spesifik dengan
+data tarif laporan, dengan kalimatmu sendiri]
 
 📈 DAMPAK EKONOMI
 
@@ -297,37 +322,37 @@ ${formatRp(kerugian300Order)}
 
 📌 CATATAN PENGAWASAN
 
-Tekankan bahwa:
-
-"Laporan yang masuk tidak boleh berhenti sebagai arsip.
-Setiap laporan merupakan data lapangan yang dapat
-menjadi bahan verifikasi, evaluasi, dan tindak lanjut
-pengawasan tarif."
+Dengan kalimatmu sendiri, tekankan bahwa laporan ini
+adalah data lapangan yang harus masuk mekanisme
+pengawasan dan tidak boleh berhenti sebagai arsip.
+Kaitkan dengan karakteristik laporan ini secara spesifik.
 
 🔥 PESAN INTI
 
-Buat satu kalimat penutup yang kuat:
-
-"Satu laporan adalah indikator.
-Laporan yang berulang adalah pola.
-Pola yang terverifikasi adalah dasar tindakan."
-
-Jangan provokatif.
-Jangan membuat tuduhan tanpa verifikasi.
+Tulis SATU kalimat penutup ORIGINAL (bukan hafalan) yang
+menegaskan semangat: laporan adalah indikator, laporan
+berulang adalah pola, pola terverifikasi adalah dasar
+tindakan. Boleh disesuaikan gaya bahasanya asal semangat
+itu tersampaikan. Jangan provokatif, jangan menuduh tanpa
+verifikasi.
 `
     : `
 ✅ KESIMPULAN
 
-"Tarif telah sesuai dengan ketentuan SK Gub Kalsel.
-Tidak ada indikasi pelanggaran."
+Tulis 1-2 kalimat dengan kalimatmu sendiri: tarif telah
+sesuai ketentuan SK Gub Kalsel, tidak ada indikasi
+pelanggaran untuk laporan dari platform ${data.platform}
+di ${data.lokasi} ini.
 ${
   catatan
     ? `
 📝 CATATAN DRIVER (ANALISIS):
 
 Meskipun tarif sesuai, tetap analisis keterangan driver
-jika ada keluhan lain. Jika tidak ada, cukup tulis:
-"Tidak ada keluhan tambahan dari driver."
+ini secara spesifik jika ada keluhan lain di luar soal
+tarif. Jika keterangannya tidak menunjukkan keluhan,
+cukup tulis dengan kalimatmu sendiri bahwa tidak ada
+keluhan tambahan dari driver.
 `
     : ''
 }
@@ -365,6 +390,8 @@ Prioritas utama:
 3. Deteksi indikasi.
 4. Rekomendasi tindakan.
 5. Bahasa profesional dan tegas.
+6. Analisis ORIGINAL per laporan — hindari kalimat baku
+   yang bisa dipakai ulang identik di laporan lain.
 
 Jangan membuat fakta atau dasar hukum yang tidak tersedia.
 Jangan mengubah indikasi menjadi vonis hukum.
@@ -398,7 +425,8 @@ Jangan mengubah indikasi menjadi vonis hukum.
   } catch (error) {
     console.error('analisisLaporan error:', error)
 
-    // Fallback jika API error
+    // Fallback jika API error — ini SENGAJA fixed text, karena dipakai
+    // hanya saat AI gagal total, bukan hasil analisis normal
     if (isPelanggaran) {
       return `
 STATUS PENGAWASAN
@@ -409,6 +437,8 @@ TEMUAN
 
 Terdapat perbedaan antara tarif yang diterima driver
 dengan tarif berdasarkan parameter yang digunakan.
+(Catatan sistem: analisis AI gagal dimuat, ini adalah
+ringkasan otomatis fallback.)
 
 INDIKASI REGULASI
 
@@ -456,9 +486,11 @@ DATA NORMAL
 
 KESIMPULAN
 
-"Tarif telah sesuai dengan ketentuan SK Gub Kalsel.
-Tidak ada indikasi pelanggaran."
+Tarif telah sesuai dengan ketentuan SK Gub Kalsel.
+Tidak ada indikasi pelanggaran.
+(Catatan sistem: analisis AI gagal dimuat, ini adalah
+ringkasan otomatis fallback.)
 `
     }
   }
-}  
+}
