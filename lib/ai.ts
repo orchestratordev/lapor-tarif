@@ -396,7 +396,7 @@ Langsung ke substansi.
       config: {
         systemInstruction,
         temperature: 0.5,
-        maxOutputTokens: 700,
+        maxOutputTokens: 8192,
       },
     })
 
