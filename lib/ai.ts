@@ -376,7 +376,7 @@ Jangan mengubah indikasi menjadi vonis hukum.
           }
         ],
         max_tokens: 700,
-        temperature: 0.15
+        temperature: 0.5
       })
     })
 
