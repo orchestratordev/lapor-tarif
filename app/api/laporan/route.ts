@@ -22,30 +22,37 @@ const formatWaktuWITA = (isoString: string) => {
     hour12: false
   }).format(date); + ' WITA';
 };
+
 export async function POST(req: NextRequest) {
   try {
     const body = await req.json()
 
     // 1. Analisis AI (tidak blocking)
-let analisis = 'Analisis AI tidak tersedia'
-try {
-  analisis = await analisisLaporan({
-  platform: body.platform,
-  jarak: body.jarak,
-  tarif_diterima: body.tarif_diterima,
-  tarif_seharusnya: body.tarif_seharusnya,
-  selisih: body.tarif_seharusnya - body.tarif_diterima,
-  lokasi: body.lokasi,
-  catatan: body.catatan || '' // <--- TAMBAHKAN BARIS INI
-})
-} catch (aiError) {
-  console.error('AI Error:', aiError)
-}
+    let analisis = 'Analisis AI tidak tersedia'
+    try {
+      analisis = await analisisLaporan({
+        platform: body.platform,
+        jarak: body.jarak,
+        tarif_diterima: body.tarif_diterima,
+        tarif_seharusnya: body.tarif_seharusnya,
+        selisih: body.tarif_seharusnya - body.tarif_diterima,
+        lokasi: body.lokasi,
+        catatan: body.catatan || null, // keterangan dari pelapor, dikirim ke AI sebagai konteks
+      })
+    } catch (aiError) {
+      console.error('AI Error:', aiError)
+    }
 
-   // 2. Simpan ke Supabase (tanpa selisih — auto generated)
+    // 2. Simpan ke Supabase
+    //    PERBAIKAN: jenis_pelapor & nama sebelumnya tidak ikut tersimpan — sekarang ditambahkan.
+    //    PERBAIKAN: keterangan dari PELAPOR disimpan ke kolom 'kronologi' (baru),
+    //    supaya tidak menimpa kolom 'catatan' yang dipakai admin untuk catatan tindak lanjut.
     const { data, error } = await supabase
       .from('laporan')
       .insert({
+        jenis_laporan: body.jenis_laporan || 'tarif',
+        jenis_pelapor: body.jenis_pelapor || 'driver',
+        nama: body.nama || null,
         platform: body.platform,
         jenis_layanan: 'Mobil',
         jarak: body.jarak,
@@ -55,6 +62,7 @@ try {
         waktu_kejadian: body.waktu_kejadian,
         no_hp_driver: body.no_hp_driver || null,
         screenshots: body.screenshots || [],
+        kronologi: body.catatan || null,
         analisis_ai: analisis,
         status: 'baru'
       })
@@ -65,8 +73,10 @@ try {
 
     // 3. Kirim notifikasi WA
     const selisih = body.tarif_seharusnya - body.tarif_diterima
+    const labelPelapor = body.jenis_pelapor === 'masyarakat' ? 'Masyarakat/Penumpang' : 'Driver'
     const pesan = `🚨 *LAPORAN TARIF BARU*
 
+👤 Pelapor: ${labelPelapor}${body.nama ? ` (${body.nama})` : ''}
 📱 Platform: ${body.platform}
 🚗 Jenis: Mobil (R4)
 📏 Jarak: ${body.jarak} km
@@ -74,7 +84,6 @@ try {
 ✅ Tarif seharusnya: Rp ${body.tarif_seharusnya.toLocaleString('id-ID')}
 ❌ Selisih: Rp ${selisih.toLocaleString('id-ID')}
 📍 Lokasi: ${body.lokasi}
-📝 Keterangan: ${body.catatan || '-'}
 🕐 Waktu: ${formatWaktuWITA(body.waktu_kejadian)}
 
 🤖 *Analisis AI:*
